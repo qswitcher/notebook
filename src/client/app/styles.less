@@ -1,0 +1,30 @@
+@import "normalize.css/normalize.css";
+@import "./reset.less";
+
+/* apply a natural box layout model to all elements, but allowing components to change */
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+.body-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.main {
+    margin-left: 73px;
+}
+
+
+h1 {
+    padding: 20px;
+    font-size: 20pt;
+}
+
+@import "./common.less";

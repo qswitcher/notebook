@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './styles.less';
+import { connect } from 'react-redux';
 
 const Task = ({name}) => {
     return (
@@ -9,9 +10,8 @@ const Task = ({name}) => {
 
 class TaskList extends React.Component {
     render() {
-        const task_names = ['Mow Lawn', 'Goober'];
-        const tasks = task_names.map((name) => {
-            return (<Task key={name} name={name}/>)
+        const tasks = this.props.all.map((task) => {
+            return (<Task key={task.id} name={task.name}/>)
         });
 
         return (
@@ -23,4 +23,8 @@ class TaskList extends React.Component {
     }
 }
 
-export default TaskList;
+export default connect((state) => {
+    return {
+        all: state.tasks.all
+    }
+})(TaskList);

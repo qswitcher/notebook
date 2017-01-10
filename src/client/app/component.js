@@ -1,9 +1,8 @@
 import React from 'react';
-import { Component } from 'react';
 import styles from './styles.less';
 import Toolbar from './toolbar';
 
-export default class App extends Component {
+export default class App extends React.Component {
   render() {
     return (
       <div className={styles['body-inner']}>

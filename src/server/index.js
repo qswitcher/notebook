@@ -1,22 +1,22 @@
 import path from 'path';
-import { Server } from 'http';
 import Express from 'express';
 import tasks from './tasks/router';
 
-const app = new Express();
-const server = new Server(app);
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '..', 'views'));
+export default function() {
+    const app = new Express();
 
-// endpoints
-app.use('/api/tasks', tasks);
+    const indexPath = path.join(__dirname, '../index.html');
+    const publicPath = Express.static(path.join(__dirname, '../../dist'));
 
-// start the server
-const port = process.env.PORT || 3000;
-const env = process.env.NODE_ENV || 'production';
-server.listen(port, err => {
-  if (err) {
-    return console.error(err);
-  }
-  console.info(`Server running on http://localhost:${port} [${env}]`);
-});
+    app.set('view engine', 'ejs');
+    app.set('views', path.join(__dirname, '..', 'views'));
+
+    // endpoints
+    app.use('/api/tasks', tasks);
+
+    app.use('/dist', publicPath);
+
+    app.get('/', function (_, res) { res.sendFile(indexPath) });
+
+    return app;
+}

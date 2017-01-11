@@ -2,16 +2,16 @@ import React from 'react';
 import styles from './styles.less';
 import { connect } from 'react-redux';
 
-const Task = ({name}) => {
+const Task = ({task}) => {
     return (
-        <li className={styles.task}>{ name }</li>
+        <li className={styles.task}>{ task.name }</li>
     );
 };
 
 class TaskList extends React.Component {
     render() {
         const tasks = this.props.all.map((task) => {
-            return (<Task key={task.id} name={task.name}/>)
+            return (<Task key={task['_id']} task={task}/>)
         });
 
         return (

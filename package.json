@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "client-dev": "webpack-dev-server --progress --colors",
-    "server-dev": "nodemon src/server/index.js --exec babel-node --presets es2015"
+    "start": "npm build && node src/index.js",
+    "dev-start": "nodemon src/index.js --exec babel-node --presets es2015,stage-2",
+    "build": "webpack --config ./webpack.deployment.config.js --progress --colors",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",

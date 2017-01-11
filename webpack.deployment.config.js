@@ -5,11 +5,17 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var BUILD_DIR = path.resolve(__dirname, 'dist');
 var APP_DIR = path.resolve(__dirname, 'src/client/app');
 
+/**
+Borrowed concepts from https://blog.hellojs.org/setting-up-your-react-es6-development-environment-with-webpack-express-and-babel-e2a53994ade#.o1wmiqmas
+*/
 var config = {
+  devtool: 'source-map',
+
   entry: APP_DIR + '/index.js',
   output: {
     path: BUILD_DIR,
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    publicPath: '/dist'
   },
   module: {
       loaders: [
@@ -33,10 +39,16 @@ var config = {
       ]
   },
   plugins: [
-    new ExtractTextPlugin("bundle.css"),
+    new ExtractTextPlugin("dist/bundle.css"),
     new HtmlWebpackPlugin({
-		template: './src/index.html'
-	}),
+        template: './src/index.html'
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+        minimize: true,
+        compress: {
+          warnings: false
+        }
+    })
   ],
   resolve: {
       root: [

@@ -4,7 +4,10 @@ import { connect } from 'react-redux';
 
 const Task = ({task}) => {
     return (
-        <li className={styles.task}>{ task.name }</li>
+        <li className={styles.task}>
+            <span>{ task.name }</span>
+            <button type="button" className="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </li>
     );
 };
 

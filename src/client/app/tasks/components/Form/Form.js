@@ -1,5 +1,7 @@
 import React from 'react';
 import commonStyles from 'common.less';
+import { createTask } from '../../actions';
+import { connect } from 'react-redux';
 
 class Form extends React.Component {
     constructor(props) {
@@ -11,11 +13,12 @@ class Form extends React.Component {
     }
 
     handleChange(event) {
+        console.log(event.target.value);
         this.setState({value: event.target.value});
     }
 
     handleSubmit(event) {
-        alert('A name was submitted: ' + this.state.value);
+        this.props.dispatch(createTask(this.state.value));
         event.preventDefault();
     }
 
@@ -25,7 +28,11 @@ class Form extends React.Component {
                 <textarea rows="4" cols="50" value={this.state.value} onChange={this.handleChange}></textarea>
                 <button type="submit" className={commonStyles.btn}>{'Submit'}</button>
             </form>);
-        }
     }
+}
 
-    export default Form;
+export default connect((state) => {
+    return {
+        all: state.tasks.all
+    }
+})(Form);

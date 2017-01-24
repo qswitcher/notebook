@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "clean": "rimraf dist",
     "start": "npm build && node src/index.js",
     "dev-start": "nodemon src/index.js --exec babel-node --presets es2015,stage-2",
-    "build": "webpack --config ./webpack.deployment.config.js --progress --colors",
+    "build": "npm run clean && webpack --config ./webpack.deployment.config.js --progress --colors",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -21,14 +22,15 @@
     "babel-preset-react": "^6.16.0",
     "css-loader": "^0.26.1",
     "eslint": "^3.12.2",
-    "extract-text-webpack-plugin": "^1.0.1",
+    "extract-text-webpack-plugin": "^2.0.0-beta.5",
     "html-webpack-plugin": "^2.24.1",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
     "nodemon": "^1.11.0",
     "react-hot-loader": "^1.3.1",
+    "rimraf": "^2.5.4",
     "style-loader": "^0.13.1",
-    "webpack": "^1.14.0",
+    "webpack": "^2.2.0",
     "webpack-dev-middleware": "^1.9.0",
     "webpack-dev-server": "^1.16.2",
     "webpack-hot-middleware": "^2.15.0"
@@ -36,6 +38,8 @@
   "dependencies": {
     "axios": "^0.15.3",
     "babel-preset-stage-2": "^6.18.0",
+    "body-parser": "^1.16.0",
+    "bootstrap": "^4.0.0-alpha.6",
     "express": "^4.14.0",
     "mongodb": "^2.2.19",
     "normalize.css": "^5.0.0",

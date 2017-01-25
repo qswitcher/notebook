@@ -1,6 +1,6 @@
 const INITIAL_STATE = {all: []};
 
-import { FETCH_TASKS, CREATE_TASK } from './actions';
+import { FETCH_TASKS, CREATE_TASK, DELETE_TASK } from './actions';
 
 export default function(state = INITIAL_STATE, action) {
     switch(action.type) {
@@ -13,6 +13,11 @@ export default function(state = INITIAL_STATE, action) {
         return {
             ...state,
             all: [action.payload, ...state.all]
+        }
+        case DELETE_TASK:
+        return {
+            ...state,
+            all: state.all.filter(task => task['_id'] !== action.payload)
         }
         default:
         return state;

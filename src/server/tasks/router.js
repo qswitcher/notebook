@@ -1,5 +1,6 @@
 import Express from 'express';
 const router = Express.Router();
+import { ObjectId } from 'mongodb';
 
 export default (db) => {
     router.get('/', (req, res) => {
@@ -11,10 +12,14 @@ export default (db) => {
     });
 
     router.post('/', (req, res) => {
-        console.log(req.body);
         db.collection('tasks').insertOne(req.body);
         res.json(req.body);
     });
 
+    router.delete('/:id', (req, res) => {
+        const id = req.params.id;
+        db.collection('tasks').deleteOne({'_id': ObjectId(id)});
+        res.json({id});
+    })
     return router;
 };

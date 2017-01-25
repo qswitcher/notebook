@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "start": "npm build && node src/index.js",
-    "dev-start": "nodemon src/index.js --watch src --exec babel-node --presets es2015,stage-2",
+    "dev-start": "nodemon src/index.js --watch src/server --exec babel-node --presets es2015,stage-2",
     "build": "npm run clean && webpack --config ./webpack.config.js --progress --colors",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

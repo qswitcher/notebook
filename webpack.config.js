@@ -9,7 +9,6 @@ var APP_DIR = path.resolve(__dirname, 'src/client/app');
 
 const VENDOR_LIBS = [
     'axios',
-    'bootstrap',
     'normalize.css',
     'react',
     'react-dom',

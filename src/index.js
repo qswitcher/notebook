@@ -16,14 +16,16 @@ connectDB((err, db) => {
         const config = require('../webpack.config.js');
         const compiler = webpack(config);
 
-        app.use(webpackHotMiddleware(compiler))
-        app.use(webpackDevMiddleware(compiler, {
+        const devMiddleware = webpackDevMiddleware(compiler, {
             noInfo: false,
             publicPath: config.output.publicPathdist,
-                stats: {
+            stats: {
                colors: true
            },
-        }));
+       });
+
+        app.use(webpackHotMiddleware(compiler));
+        app.use(devMiddleware);
     }
 
     app.listen(port)

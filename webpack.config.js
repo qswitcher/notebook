@@ -2,6 +2,8 @@ var webpack = require('webpack');
 var path = require('path');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var AssetsPlugin = require('assets-webpack-plugin');
+
 var BUILD_DIR = path.resolve(__dirname, 'dist');
 var APP_DIR = path.resolve(__dirname, 'src/client/app');
 
@@ -82,7 +84,11 @@ var config = {
     new HtmlWebpackPlugin({
 		template: 'src/index.template.ejs',
         inject: 'body'
-	})
+	}),
+    new AssetsPlugin({
+        path: path.join(__dirname, 'dist'),
+        filename: 'assets.json'
+    })
   ],
   resolve: {
       modules: [

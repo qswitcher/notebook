@@ -13,7 +13,6 @@ class Form extends React.Component {
     }
 
     handleChange(event) {
-        console.log(event.target.value);
         this.setState({value: event.target.value});
     }
 
@@ -22,17 +21,29 @@ class Form extends React.Component {
         event.preventDefault();
     }
 
+    componentWillReceiveProps(nextProps) {
+        const {task} = nextProps;
+        if (task) {
+            this.setState({value: task.name});
+        }
+    }
+
     render() {
         return (
             <form onSubmit={this.handleSubmit}>
-                <textarea rows="4" cols="50" value={this.state.value} onChange={this.handleChange}></textarea>
-                <button type="submit" className={commonStyles.btn}>{'Submit'}</button>
+                <div className="form-group">
+                    <textarea className="form-control" rows="10" cols="80" value={this.state.value} onChange={this.handleChange}></textarea>
+                </div>
+                <div className="form-group">
+                    <button type="submit" className='btn btn-info'>{'Save'}</button>
+                </div>
             </form>);
     }
 }
 
 export default connect((state) => {
     return {
-        all: state.tasks.all
+        all: state.tasks.all,
+        task: state.tasks.selected
     }
 })(Form);

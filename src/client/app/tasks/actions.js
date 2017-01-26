@@ -3,6 +3,7 @@ import axios from 'axios';
 export const FETCH_TASKS = 'FETCH_TASKS';
 export const CREATE_TASK = 'CREATE_TASK';
 export const DELETE_TASK = 'DELETE_TASK';
+export const SELECT_TASK = 'SELECT_TASK';
 
 const ROOT_URL = '/api/tasks';
 

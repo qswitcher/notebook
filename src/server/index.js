@@ -1,6 +1,6 @@
 import path from 'path';
 import Express from 'express';
-import tasks from './tasks/router';
+import transactions from './transactions/router';
 import bodyParser from 'body-parser';
 import connect from './db';
 
@@ -16,7 +16,7 @@ export default function(db) {
     app.use(bodyParser.json());
 
     // endpoints
-    app.use('/api/tasks', tasks(db));
+    app.use('/api/transactions', transactions(db));
 
     // app.use('/dist', publicPath);
 

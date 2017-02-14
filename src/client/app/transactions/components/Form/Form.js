@@ -1,6 +1,6 @@
 import React from 'react';
 import commonStyles from 'common.less';
-import { createTask } from '../../actions';
+import { createTransaction } from '../../actions';
 import { connect } from 'react-redux';
 
 class Form extends React.Component {
@@ -17,14 +17,22 @@ class Form extends React.Component {
     }
 
     handleSubmit(event) {
-        this.props.dispatch(createTask(this.state.value));
+        const {transaction, dispatch} = this.props;
+        if (transaction) {
+            dispatch(updateTransaction({
+                id: transaction['_id'],
+                name: this.state.value
+            }));
+        } else {
+            dispatch(createTransaction(this.state.value));
+        }
         event.preventDefault();
     }
 
     componentWillReceiveProps(nextProps) {
-        const {task} = nextProps;
-        if (task) {
-            this.setState({value: task.name});
+        const {transaction} = nextProps;
+        if (transaction) {
+            this.setState({value: transaction.name});
         }
     }
 
@@ -43,7 +51,7 @@ class Form extends React.Component {
 
 export default connect((state) => {
     return {
-        all: state.tasks.all,
-        task: state.tasks.selected
+        all: state.transactions.all,
+        transaction: state.transactions.selected
     }
 })(Form);

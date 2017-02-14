@@ -26,6 +26,7 @@ var config = {
   },
   output: {
     path: BUILD_DIR,
+    publicPath: '/',
     filename: '[name].[chunkhash].js'
   },
   module: {

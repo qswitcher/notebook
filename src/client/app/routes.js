@@ -1,14 +1,18 @@
 import App from './component';
 import React from 'react';
-import { Route, IndexRoute } from 'react-router';
-import TasksIndex from './tasks';
-import TasksNew from './tasks/components/Form/Form';
-import { onTasksEnter } from './tasks/routes/route_callbacks';
+import { Route, IndexRoute, IndexRedirect } from 'react-router';
+import TransactionsIndex from './transactions';
+import TransactionsList from './transactions/components/TransactionList/TransactionList'
+import NewTransaction from './transactions/components/NewTransaction';
+import { onTransactionsEnter } from './transactions/routes/route_callbacks';
 
 const routes =  (
   <Route path="/" component={App} >
-    <IndexRoute component={ TasksIndex } onEnter={onTasksEnter}/>
-    <Route path="/new" component={ TasksNew } />
+    <IndexRedirect to="/transactions" />
+    <Route path="transactions" component={TransactionsIndex} onEnter={onTransactionsEnter}>
+        <IndexRoute component={TransactionsList}/>
+        <Route path="/transactions/new" component={ NewTransaction } />
+    </Route>
   </Route>
 );
 

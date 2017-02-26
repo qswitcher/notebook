@@ -41,18 +41,21 @@
     "axios": "^0.15.3",
     "babel-preset-stage-2": "^6.18.0",
     "body-parser": "^1.16.0",
-    "bootstrap": "^4.0.0-alpha.6",
+    "cheerio": "^0.22.0",
     "express": "^4.14.0",
     "lodash": "^4.17.4",
+    "material-ui": "^0.17.0",
     "mongodb": "^2.2.19",
     "normalize.css": "^5.0.0",
-    "react": "^15.4.1",
-    "react-bootstrap": "^0.30.7",
+    "react": "^15.4.2",
     "react-dom": "^15.4.1",
+    "react-dropzone": "^3.10.0",
     "react-redux": "^5.0.1",
     "react-router": "^3.0.0",
+    "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
-    "redux-form": "^6.4.3",
-    "redux-thunk": "^2.1.0"
+    "redux-form": "^6.5.0",
+    "redux-thunk": "^2.1.0",
+    "superagent": "^3.4.4"
   }
 }

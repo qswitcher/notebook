@@ -1,5 +1,4 @@
 import React from 'react';
-import Form from './components/Form/Form';
 import styles from './styles.less';
 
 class FinanceApp extends React.Component {

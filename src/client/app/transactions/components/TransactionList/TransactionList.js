@@ -1,29 +1,39 @@
 import React from 'react';
 import styles from './styles.less';
+import CreateForm from '../TransactionForm';
+import CreditCardImport from '../CreditCardImport';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
-import { newTransaction, deleteTransaction, SELECT_TRANSACTION } from '../../actions';
+import { createTransaction, deleteTransaction, SELECT_TRANSACTION } from '../../actions';
 
-const Transaction = ({transaction, onDelete, onSelect, selected}) => {
+const TransactionItem = ({transaction, onDelete, onSelect, selected}) => {
     return (
-        <li className={`${styles.transaction} ${selected ? styles.selected : ''}`} onClick={() => onSelect(transaction)}>
-            <span>{ transaction.name }</span>
-            <button
-                onClick={() => onDelete(transaction)}
-                type="button"
-                className="close"
-                aria-label="Close">
-                <span aria-hidden="true">&times;</span><
-            /button>
-        </li>
-    );
+        <tr>
+            <td>{ transaction.date }</td>
+            <td>{ transaction.description }</td>
+            <td>{ transaction.category }</td>
+            <td>{ transaction.amount }</td>
+            <td>
+                <button type="button" className="close" aria-label="Close" onClick={() => onDelete(transaction)}>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </td>
+        </tr>
+    )
 };
 
 class TransactionList extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {creatingNewItem: false};
+
+        this.toggleForm = this.toggleForm.bind(this);
+        this.handleCreate = this.handleCreate.bind(this);
         this.onDelete = this.onDelete.bind(this);
         this.onSelect = this.onSelect.bind(this);
+    }
+
+    toggleForm(event) {
+        this.setState({creatingNewItem: !this.state.creatingNewItem});
     }
 
     onDelete(id) {
@@ -39,11 +49,17 @@ class TransactionList extends React.Component {
         })
     }
 
+    handleCreate(values) {
+        const dispatch = this.props.dispatch;
+        dispatch(createTransaction(values));
+    }
+
     render() {
+        const { creatingNewItem } = this.state;
         const {selected, all, dispatch} = this.props;
 
         const transactions = all.map((transaction) => {
-            return (<Transaction
+            return (<TransactionItem
                 key={transaction['_id']}
                 transaction={transaction}
                 selected={selected && transaction['_id'] == selected['_id']}
@@ -52,11 +68,27 @@ class TransactionList extends React.Component {
                 />)
         });
 
+        const showFormBtn = (<button className="btn btn-success" type="button" onClick={this.toggleForm}>Create</button>);
+
         return (
             <div className={styles['transaction-list']}>
                 <h1>Transactions</h1>
-                <Link className='btn btn-success' to='/transactions/new'>Create New</Link>
-                <ul>{transactions}</ul>
+                { creatingNewItem ? <CreateForm onSubmit={this.handleCreate} handleClose={this.toggleForm} /> : showFormBtn }
+                <CreditCardImport/>
+                <table className='table table-striped'>
+                    <thead>
+                        <tr>
+                            <th>{'Date'}</th>
+                            <th>{'Description'}</th>
+                            <th>{'Category'}</th>
+                            <th>{'Amount'}</th>
+                            <th>{'Delete'}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {transactions}
+                    </tbody>
+                </table>
             </div>
         );
     }

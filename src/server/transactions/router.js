@@ -12,7 +12,8 @@ export default (db) => {
     });
 
     router.post('/', (req, res) => {
-        db.collection('transactions').insertOne(req.body);
+        const transaction = req.body;
+        db.collection('transactions').insertOne(transaction);
         res.json(req.body);
     });
 
@@ -20,6 +21,11 @@ export default (db) => {
         const id = req.params.id;
         db.collection('transactions').deleteOne({'_id': ObjectId(id)});
         res.json({id});
-    })
+    });
+
+    router.post('/import', (req, res) => {
+        console.log(req);
+        res.json({hi: 'bye'});
+    });
     return router;
 };

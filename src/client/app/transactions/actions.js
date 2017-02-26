@@ -28,9 +28,7 @@ export function fetchTransactions() {
 }
 
 export function createTransaction(transaction) {
-    const request = axios.post(`${ROOT_URL}`, {
-            name: transaction
-        });
+    const request = axios.post(`${ROOT_URL}`, transaction);
 
     return (dispatch) => {
             request.then(({data}) => {
@@ -56,4 +54,17 @@ export function deleteTransaction(transaction) {
                 });
             });
     };
+}
+
+export function importCCTransactions(files) {
+    return (dispatch) => {
+        files.forEach((file) => {
+            axios.post(
+                `${ROOT_URL}/import`,
+                file
+            ).then(() => {
+                dispatch(fetchTransactions());
+            });
+        });
+    }
 }

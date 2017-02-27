@@ -56,15 +56,19 @@ export function deleteTransaction(transaction) {
     };
 }
 
-export function importCCTransactions(files) {
+export function importTransactions(data) {
     return (dispatch) => {
-        files.forEach((file) => {
-            axios.post(
-                `${ROOT_URL}/import`,
-                file
-            ).then(() => {
-                dispatch(fetchTransactions());
-            });
+        let body = new FormData();
+        body.append('importType', data.importType);
+        for (let i = 0; i < data.importFile.length; i++) {
+            body.append(`importFile[${i}]`, data.importFile[i]);
+        }
+
+        axios.post(
+            `${ROOT_URL}/import`,
+            body
+        ).then(() => {
+            dispatch(fetchTransactions());
         });
     }
 }

@@ -1,8 +1,11 @@
-import React from 'react';
-import commonStyles from 'common.less';
-import { Field, reduxForm } from 'redux-form';
-import {importCCTransactions} from '../../actions';
-import Dropzone from 'react-dropzone';
+import React from 'react'
+import commonStyles from 'common.less'
+import { Field, reduxForm } from 'redux-form'
+import Dropzone from 'react-dropzone'
+import styles from './styles.less'
+import MenuItem from 'material-ui/MenuItem'
+import { SelectField } from 'redux-form-material-ui'
+import RaisedButton from 'material-ui/RaisedButton';
 
 const validate = (values) => {
     const errors = {};
@@ -12,13 +15,14 @@ const validate = (values) => {
     return errors;
 };
 
-const renderField = ({ input, placeholder, type, meta: { touched, error, warning } }) => {
+const renderSelect = ({ input, placeholder, type, meta: { touched, error, warning } }) => {
     const divClassName = `form-group ${touched && error ? 'has-danger' : ''}`;
     const inputClassName = `form-control ${touched && error ? 'form-control-danger' : ''}`;
     return (
-        <div className={divClassName}>
-          <input {...input} placeholder={placeholder} type={type} className={inputClassName}/>
-        </div>
+        <SelectField
+            floatingLabelText={placeholder}
+            {...input}>
+        </SelectField>
     );
 };
 
@@ -27,10 +31,11 @@ const renderDropzoneInput = (field) => {
   return (
     <div>
       <Dropzone
+        className={styles['dropzone']}
         name={field.name}
         onDrop={( filesToUpload, e ) => field.input.onChange(filesToUpload)}
       >
-        <div>Try dropping some files here, or click to select files to upload.</div>
+        <div>Click or drop a file here to upload</div>
       </Dropzone>
       {field.meta.touched &&
         field.meta.error &&
@@ -55,20 +60,17 @@ class Form extends React.Component {
         const { handleSubmit, handleClose } = this.props;
         return (
             <form className="form-inline" onSubmit={handleSubmit}>
-                <button className="btn btn-danger" type="button" onClick={handleClose}>Cancel</button>
                 <Field
                     name='importFile'
                     component={renderDropzoneInput}
                 />
                 <Field
                     name="importType"
-                    component="select"
-                    className="form-control" >
-                    <option>Type</option>
-                    <option value="Bank Statement">Bank Statement</option>
-                    <option value="Credit Card">Credit Card</option>
+                    component={SelectField}
+                    hintText="Type">
+                    <MenuItem value="Bank Statement" primaryText="Bank Statement" />
+                    <MenuItem value="Credit Card" primaryText="Credit Card"/>
                 </Field>
-                <button type="submit" className='btn btn-info'>{'Import'}</button>
             </form>
         );
     }

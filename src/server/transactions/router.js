@@ -1,6 +1,9 @@
 import Express from 'express';
 const router = Express.Router();
 import { ObjectId } from 'mongodb';
+import formidable from 'formidable';
+import fs from 'fs';
+import path from 'path';
 
 export default (db) => {
     router.get('/', (req, res) => {
@@ -24,8 +27,21 @@ export default (db) => {
     });
 
     router.post('/import', (req, res) => {
-        console.log(req);
-        res.json({hi: 'bye'});
+        let form = new formidable.IncomingForm();
+        form.multiples = true;
+        form.uploadDir = path.join(__dirname, '/../uploads');
+
+        form.on('file', function(field, file) {
+            fs.rename(file.path, path.join(form.uploadDir, file.name));
+        });
+        form.on('error', function(err) {
+            console.log('An error has occured: \n' + err);
+        });
+        form.on('end', function() {
+            res.end('success');
+        });
+
+        form.parse(req);
     });
     return router;
 };

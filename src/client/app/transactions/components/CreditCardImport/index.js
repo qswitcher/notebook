@@ -1,54 +1,59 @@
 import React from 'react';
 import Form from './Form';
 import { connect } from 'react-redux';
-import { Modal, Button } from 'react-bootstrap';
-
+import { submit } from 'redux-form'
+import { importTransactions } from '../../actions';
+import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
 
 class CreditCardImport extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {showModal: false};
-        this.handleImport = this.handleImport.bind(this);
-        this.close = this.close.bind(this);
-        this.open = this.open.bind(this);
-    }
+    state = {
+        open: false
+    };
 
-    close() {
-        this.setState({showModal: false});
-    }
+    handleClose = () => {
+        this.setState({open: false});
+    };
 
-    open() {
-        this.setState({showModal: true});
-        console.log('openning');
-    }
+    handleOpen = () => {
+        this.setState({open: true});
+    };
 
-    handleImport(values) {
+    handleImport = (values) =>  {
         const dispatch = this.props.dispatch;
-        console.log('submitted');
-        console.log(values);
-        // dispatch(importTransactions(values));
-    }
+        dispatch(importTransactions(values));
+    };
 
     render() {
         const { dispatch } = this.props;
+        const actions = [
+          <FlatButton
+            label="Cancel"
+            primary={true}
+            onTouchTap={this.handleClose}
+          />,
+          <FlatButton
+            label="Submit"
+            primary={true}
+            onTouchTap={() => dispatch(submit('creditCardImport'))}
+          />
+        ];
+
         return (
             <div>
-                <Button
-                    bsStyle="primary"
-                    onClick={this.open}>
-                    Import
-                </Button>
-                <Modal show={this.state.showModal} onHide={this.close}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Import Transactions</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form onSubmit={this.handleImport} handleClose={this.toggleForm} />
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button onClick={this.close}>Close</Button>
-                    </Modal.Footer>
-                </Modal>
+                <RaisedButton
+                    label="Import"
+                    onTouchTap={this.handleOpen}/>
+                <Dialog
+                  title="Dialog With Actions"
+                  actions={actions}
+                  modal={true}
+                  open={this.state.open}
+                  onRequestClose={this.handleClose}
+                >
+                    <Form onSubmit={this.handleImport} handleClose={this.toggleForm} />
+                </Dialog>
             </div>
         );
     }

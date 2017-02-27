@@ -4,20 +4,21 @@ import CreateForm from '../TransactionForm';
 import CreditCardImport from '../CreditCardImport';
 import { connect } from 'react-redux';
 import { createTransaction, deleteTransaction, SELECT_TRANSACTION } from '../../actions';
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 
 const TransactionItem = ({transaction, onDelete, onSelect, selected}) => {
     return (
-        <tr>
-            <td>{ transaction.date }</td>
-            <td>{ transaction.description }</td>
-            <td>{ transaction.category }</td>
-            <td>{ transaction.amount }</td>
-            <td>
+        <TableRow>
+            <TableRowColumn>{ transaction.date }</TableRowColumn>
+            <TableRowColumn>{ transaction.description }</TableRowColumn>
+            <TableRowColumn>{ transaction.category }</TableRowColumn>
+            <TableRowColumn>{ transaction.amount }</TableRowColumn>
+            <TableRowColumn>
                 <button type="button" className="close" aria-label="Close" onClick={() => onDelete(transaction)}>
                     <span aria-hidden="true">&times;</span>
                 </button>
-            </td>
-        </tr>
+            </TableRowColumn>
+        </TableRow>
     )
 };
 
@@ -75,20 +76,24 @@ class TransactionList extends React.Component {
                 <h1>Transactions</h1>
                 { creatingNewItem ? <CreateForm onSubmit={this.handleCreate} handleClose={this.toggleForm} /> : showFormBtn }
                 <CreditCardImport/>
-                <table className='table table-striped'>
-                    <thead>
-                        <tr>
-                            <th>{'Date'}</th>
-                            <th>{'Description'}</th>
-                            <th>{'Category'}</th>
-                            <th>{'Amount'}</th>
-                            <th>{'Delete'}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <Table
+                    displayRowCheckbox={false}
+                    stripedRows={true}>
+                    <TableHeader
+                        adjustForCheckbox={false}
+                        displaySelectAll={false}>
+                        <TableRow>
+                            <TableHeaderColumn>Date</TableHeaderColumn>
+                            <TableHeaderColumn>Description</TableHeaderColumn>
+                            <TableHeaderColumn>Category</TableHeaderColumn>
+                            <TableHeaderColumn>Amount</TableHeaderColumn>
+                            <TableHeaderColumn>Delete</TableHeaderColumn>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
                         {transactions}
-                    </tbody>
-                </table>
+                    </TableBody>
+                </Table>
             </div>
         );
     }

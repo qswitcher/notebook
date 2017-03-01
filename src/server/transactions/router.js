@@ -1,9 +1,9 @@
 import Express from 'express';
 const router = Express.Router();
 import { ObjectId } from 'mongodb';
-import formidable from 'formidable';
 import fs from 'fs';
 import path from 'path';
+import formidable from 'formidable';
 
 export default (db) => {
     router.get('/', (req, res) => {
@@ -28,20 +28,48 @@ export default (db) => {
 
     router.post('/import', (req, res) => {
         let form = new formidable.IncomingForm();
-        form.multiples = true;
-        form.uploadDir = path.join(__dirname, '/../uploads');
+        // form.multiples = true;
+        // form.uploadDir = path.join(__dirname, '/../uploads');
 
-        form.on('file', function(field, file) {
-            fs.rename(file.path, path.join(form.uploadDir, file.name));
-        });
-        form.on('error', function(err) {
-            console.log('An error has occured: \n' + err);
-        });
-        form.on('end', function() {
-            res.end('success');
-        });
+        // form.on('file', function(field, file) {
+        //     fs.rename(file.path, path.join(form.uploadDir, file.name));
+        // });
+        // form.on('error', function(err) {
+        //     console.log('An error has occured: \n' + err);
+        // });
+        // form.on('end', function(fields, files) {
+        //     console.log(fields);
+        //     res.end('success');
+        // });
 
-        form.parse(req);
+        const readline = require('readline');
+        const async = require('async');
+
+        // form.parse(req);
+        form.parse(req, function(err, fields, files) {
+            // console.log(fields);
+            let tasks = Object.keys(files).map((key) => {
+                return (callback) => {
+                    const file = files[key];
+                    const instream = fs.createReadStream(file.path);
+                    const outstream = new (require('stream'))();
+                    const rl = readline.createInterface(instream, outstream);
+
+                    rl.on('line', function(line) {
+                        console.log(`line=${line}`);
+                    });
+
+                    rl.on('close', function(line) {
+                        callback(null);
+                    });
+                };
+            });
+
+            async.parallel(tasks, function(err, results) {
+                console.log('done');
+                res.end('success');
+            });
+        });
     });
     return router;
 };

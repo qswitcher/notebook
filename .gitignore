@@ -1,6 +1,8 @@
 node_modules/
 dist/
 
+npm-debug.log
+
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml

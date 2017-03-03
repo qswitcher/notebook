@@ -28,45 +28,51 @@ export default (db) => {
 
     router.post('/import', (req, res) => {
         let form = new formidable.IncomingForm();
-        // form.multiples = true;
-        // form.uploadDir = path.join(__dirname, '/../uploads');
-
-        // form.on('file', function(field, file) {
-        //     fs.rename(file.path, path.join(form.uploadDir, file.name));
-        // });
-        // form.on('error', function(err) {
-        //     console.log('An error has occured: \n' + err);
-        // });
-        // form.on('end', function(fields, files) {
-        //     console.log(fields);
-        //     res.end('success');
-        // });
 
         const readline = require('readline');
         const async = require('async');
+        const csv = require('csv');
 
-        // form.parse(req);
         form.parse(req, function(err, fields, files) {
-            // console.log(fields);
             let tasks = Object.keys(files).map((key) => {
                 return (callback) => {
                     const file = files[key];
-                    const instream = fs.createReadStream(file.path);
-                    const outstream = new (require('stream'))();
-                    const rl = readline.createInterface(instream, outstream);
+                    const options = {
+                        columns: true,
+                        trim: true,
+                        auto_parse_date: true,
+                        auto_parse: true,
+                        skip_empty_lines: true
+                    };
+                    let parser = csv.parse(options, function(err, data){
+                        if (err) {
+                            console.error(err);
+                            return callback(err);
+                        }
 
-                    rl.on('line', function(line) {
-                        console.log(`line=${line}`);
+                        // send to DB
+                        const transactions = data.map((row) => {
+                            let date = row['Date'];
+                            let credit = row['Credit'] || '0';
+                            let debit = row['Debit'] || '0';
+                            let amount = credit - debit;
+                            return {
+                                date: date.toISOString().substring(0, 10),
+                                amount: amount,
+                                description: row['Description']
+                            }
+                        });
+
+                        db.collection('transactions').insertMany(transactions);
+                        return callback(null, transactions);
                     });
 
-                    rl.on('close', function(line) {
-                        callback(null);
-                    });
+                    fs.createReadStream(file.path).pipe(parser);
                 };
             });
 
             async.parallel(tasks, function(err, results) {
-                console.log('done');
+                console.log('Imported=' + results);
                 res.end('success');
             });
         });

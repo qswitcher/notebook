@@ -6,6 +6,7 @@ import styles from './styles.less'
 import MenuItem from 'material-ui/MenuItem'
 import { SelectField } from 'redux-form-material-ui'
 import RaisedButton from 'material-ui/RaisedButton';
+import {List, ListItem} from 'material-ui/List';
 
 const validate = (values) => {
     const errors = {};
@@ -41,9 +42,9 @@ const renderDropzoneInput = (field) => {
         field.meta.error &&
         <span className="error">{field.meta.error}</span>}
       {files && Array.isArray(files) && (
-        <ul>
-          { files.map((file, i) => <li key={i}>{file.name}</li>) }
-        </ul>
+        <List>
+          { files.map((file, i) => <ListItem key={i} primaryText={file.name}/>) }
+        </List>
       )}
     </div>
   );
@@ -53,7 +54,6 @@ class Form extends React.Component {
     onDrop(acceptedFiles, rejectedFiles) {
         const {dispatch} = this.props;
         this.setState({files: acceptedFiles});
-        console.log(acceptedFiles);
     }
 
     render() {
@@ -68,8 +68,10 @@ class Form extends React.Component {
                     name="importType"
                     component={SelectField}
                     hintText="Type">
-                    <MenuItem value="Bank Statement" primaryText="Bank Statement" />
-                    <MenuItem value="Credit Card" primaryText="Credit Card"/>
+                    <MenuItem value="citi" primaryText="Citi Bank Credit Card"/>
+                    <MenuItem value="amex" primaryText="American Express"/>
+                    <MenuItem value="amazon" primaryText="Amazon Credit Card"/>
+                    <MenuItem value="ally" primaryText="Ally Bank Statement" />
                 </Field>
             </form>
         );

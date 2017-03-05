@@ -27,14 +27,9 @@ class TransactionList extends React.Component {
         super(props);
         this.state = {creatingNewItem: false};
 
-        this.toggleForm = this.toggleForm.bind(this);
         this.handleCreate = this.handleCreate.bind(this);
         this.onDelete = this.onDelete.bind(this);
         this.onSelect = this.onSelect.bind(this);
-    }
-
-    toggleForm(event) {
-        this.setState({creatingNewItem: !this.state.creatingNewItem});
     }
 
     onDelete(id) {
@@ -74,7 +69,7 @@ class TransactionList extends React.Component {
         return (
             <div className={styles['transaction-list']}>
                 <h1>Transactions</h1>
-                { creatingNewItem ? <CreateForm onSubmit={this.handleCreate} handleClose={this.toggleForm} /> : showFormBtn }
+                <CreateForm onSubmit={this.handleCreate} />
                 <CreditCardImport/>
                 <Table
                     displayRowCheckbox={false}

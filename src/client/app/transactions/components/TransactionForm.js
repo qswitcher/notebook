@@ -1,6 +1,12 @@
 import React from 'react';
 import commonStyles from 'common.less';
 import { Field, reduxForm } from 'redux-form';
+import MenuItem from 'material-ui/MenuItem'
+import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
+import { SelectField, TextField } from 'redux-form-material-ui';
+import { submit } from 'redux-form'
 
 const validate = (values) => {
     const errors = {};
@@ -13,47 +19,70 @@ const validate = (values) => {
     return errors;
 };
 
-const renderField = ({ input, placeholder, type, meta: { touched, error, warning } }) => {
-    const divClassName = `form-group ${touched && error ? 'has-danger' : ''}`;
-    const inputClassName = `form-control ${touched && error ? 'form-control-danger' : ''}`;
-    return (
-        <div className={divClassName}>
-          <input {...input} placeholder={placeholder} type={type} className={inputClassName}/>
-        </div>
-    );
-};
-
 class TransactionForm extends React.Component {
+    state = {
+        open: false
+    };
+
+    handleClose = () => {
+        this.setState({open: false});
+    };
+
+    handleOpen = () => {
+        this.setState({open: true});
+    };
+
     render() {
         const { handleSubmit, handleClose } = this.props;
+
+        const actions = [
+          <FlatButton
+            label="Cancel"
+            primary={true}
+            onTouchTap={this.handleClose}
+          />,
+          <FlatButton
+            label="Submit"
+            primary={true}
+            onTouchTap={() => dispatch(submit('newTransaction'))}
+          />
+        ];
+
         return (
-            <form className="form-inline" onSubmit={handleSubmit}>
-                <button className="btn btn-danger" type="button" onClick={handleClose}>Cancel</button>
-                <Field
-                    name="date"
-                    component={renderField}
-                    type="text"
-                    placeholder="YYYY-MM-dd"/>
-                <Field
-                    name="amount"
-                    component={renderField}
-                    type="text"
-                    placeholder="Amount"/>
-                <Field
-                    name="description"
-                    component={renderField}
-                    type="text"
-                    placeholder="Description"/>
-                <Field
-                    name="category"
-                    component="select"
-                    className="form-control" >
-                    <option>Category</option>
-                    <option value="Home Improvement">Home Improvement</option>
-                    <option value="Groceries">Groceries</option>
-                </Field>
-                <button type="submit" className='btn btn-info'>{'Create'}</button>
-            </form>
+            <div>
+                <RaisedButton
+                    label="Create"
+                    onTouchTap={this.handleOpen}/>
+                <Dialog
+                  title="Create Transaction"
+                  actions={actions}
+                  modal={true}
+                  open={this.state.open}
+                  onRequestClose={this.handleClose}
+                >
+                    <form onSubmit={handleSubmit}>
+                        <Field
+                            name="date"
+                            component={TextField}
+                            placeholder="YYYY-MM-dd"/>
+                        <Field
+                            name="amount"
+                            component={TextField}
+                            placeholder="Amount"/>
+                        <Field
+                            name="description"
+                            component={TextField}
+                            placeholder="Description"/>
+                        <Field
+                            name="category"
+                            component={SelectField}
+                            hintText="Category">
+                            <MenuItem value="home_improvement" primaryText="Home Improvement"/>
+                            <MenuItem value="groceries" primaryText="Groceries"/>
+                        </Field>
+                    </form>
+                </Dialog>
+            </div>
         );
     }
 }

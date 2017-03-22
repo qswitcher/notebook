@@ -1,26 +1,28 @@
 import axios from 'axios';
-
-export const FETCH_TRANSACTIONS = 'FETCH_TRANSACTIONS';
-export const CREATE_TRANSACTION = 'CREATE_TRANSACTION';
-export const DELETE_TRANSACTION = 'DELETE_TRANSACTION';
-export const SELECT_TRANSACTION = 'SELECT_TRANSACTION';
-export const NEW_TRANSACTION = 'NEW_TRANSACTION';
+import * as actions from './types';
 
 const ROOT_URL = '/api/transactions';
 
 export function newTransaction() {
     return {
-        type: NEW_TRANSACTION
+        type: actions.NEW_TRANSACTION
     };
 };
 
-export function fetchTransactions() {
-    const request = axios.get(`${ROOT_URL}`);
+export function fetchTransactions(params) {
+    let query = '';
+    if (Object.keys(params)) {
+        query = Object.keys(params)
+        .map((key) => `${key}=${params[key]}`)
+        .join('&');
+        query = '?' + query;
+    }
+    const request = axios.get(`${ROOT_URL}${query}`);
 
     return (dispatch) => {
             request.then(({data}) => {
                 dispatch({
-                    type: FETCH_TRANSACTIONS,
+                    type: actions.FETCH_TRANSACTIONS,
                     payload: data
                 });
             });
@@ -33,7 +35,7 @@ export function createTransaction(transaction) {
     return (dispatch) => {
             request.then(({data}) => {
                 dispatch({
-                    type: CREATE_TRANSACTION,
+                    type: actions.CREATE_TRANSACTION,
                     payload: data
                 });
             });
@@ -42,14 +44,12 @@ export function createTransaction(transaction) {
 
 export function deleteTransaction(transaction) {
     const id = transaction['_id'];
-    const request = axios.delete(`${ROOT_URL}/${id}`, {
-            id
-        });
+    const request = axios.delete(`${ROOT_URL}/${id}`);
 
     return (dispatch) => {
             request.then(() => {
                 dispatch({
-                    type: DELETE_TRANSACTION,
+                    type: actions.DELETE_TRANSACTION,
                     payload: id
                 });
             });
@@ -73,4 +73,32 @@ export function importTransactions(data) {
             dispatch(fetchTransactions());
         });
     }
-}
+};
+
+export function selectTransactions(indices) {
+    if (indices === 'all') {
+        return {
+            type: actions.SELECT_ALL
+        }
+    }
+    
+    return {
+        type: actions.SELECT_TRANSACTIONS,
+        payload: indices
+    }
+};
+
+export function deleteSelected(selected) {
+    const request = axios.post(`${ROOT_URL}/delete`, selected.map((item) => item['_id']));
+
+    return (dispatch) => {
+            request.then(() => {
+                dispatch({
+                    type: actions.DELETE_TRANSACTIONS,
+                    payload: selected
+                });
+            }).catch((err) => {
+                console.error(err);
+            });
+    };
+};

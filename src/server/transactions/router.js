@@ -7,16 +7,36 @@ import formidable from 'formidable';
 
 export default (db) => {
     router.get('/', (req, res) => {
-        db.collection('transactions').find().toArray((err, result) => {
+        const today = new Date();
+        const year = req.params.currentYear || today.getFullYear();
+        const month = req.params.currentMonth || today.getMonth() + 1;
+
+        db.collection('transactions').find().sort('date', -1).toArray((err, result) => {
             if (err) throw err;
 
-            res.json(result);
+            res.json(result.map((item) => {
+                const date = item.date;
+                let formattedDate;
+                // TODO delete all the string type dates
+                if (typeof date === 'string') {
+                    formattedDate = date;
+                } else {
+                    formattedDate = (new Date(date)).toISOString().substring(0,10);
+                }
+                return {
+                    ...item,
+                    date: formattedDate
+                }
+            }));
         });
     });
 
     router.post('/', (req, res) => {
         const transaction = req.body;
-        db.collection('transactions').insertOne(transaction);
+        db.collection('transactions').insertOne({
+            ...transaction,
+            date: Date.parse(transaction.date)
+        });
         res.json(req.body);
     });
 
@@ -24,6 +44,15 @@ export default (db) => {
         const id = req.params.id;
         db.collection('transactions').deleteOne({'_id': ObjectId(id)});
         res.json({id});
+    });
+
+    router.post('/delete', (req, res) => {
+        const ids = req.body;
+        console.log(ids);
+        db.collection('transactions').deleteMany({
+            '_id': { $in: ids.map((id) => ObjectId(id))}
+        });
+        res.end('success');
     });
 
     router.post('/import', (req, res) => {
@@ -52,13 +81,12 @@ export default (db) => {
 
                         // send to DB
                         const transactions = data.map((row) => {
-                            let date = row['Date'];
                             let credit = row['Credit'] || '0';
                             let debit = row['Debit'] || '0';
                             let amount = credit - debit;
                             return {
-                                date: date.toISOString().substring(0, 10),
-                                amount: amount,
+                                date: row['Date'],
+                                amount,
                                 description: row['Description']
                             }
                         });
@@ -72,7 +100,6 @@ export default (db) => {
             });
 
             async.parallel(tasks, function(err, results) {
-                console.log('Imported=' + results);
                 res.end('success');
             });
         });

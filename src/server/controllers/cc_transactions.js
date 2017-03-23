@@ -8,10 +8,11 @@ import { dbInserter } from './helpers/importer';
 
 export function list(req, res, next) {
     const today = new Date();
-    const year = req.params.currentYear || today.getFullYear();
-    const month = req.params.currentMonth || today.getMonth() + 1;
-
-    CCTransaction.find().sort('-date').lean().exec((err, docs) => {
+    const year = req.query.currentYear || today.getFullYear();
+    const month = (+req.query.currentMonth + 1) || today.getMonth() + 1;
+    CCTransaction.find({
+        date: { $gte: Date.parse(`${year}-${month}-01`) , $lt: Date.parse(`${year}-${month % 12 + 1}-01`)}
+    }).sort('-date').lean().exec((err, docs) => {
         if (err) throw err;
 
         res.json(docs.map((item) => {

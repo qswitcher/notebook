@@ -102,3 +102,17 @@ export function deleteSelected(selected) {
             });
     };
 };
+
+export function updateCurrentMonth(value) {
+    return {
+        type: actions.SET_CURRENT_MONTH,
+        payload: value
+    };
+};
+
+export function updateCurrentYear(value) {
+    return {
+        type: actions.SET_CURRENT_YEAR,
+        payload: value
+    };
+};

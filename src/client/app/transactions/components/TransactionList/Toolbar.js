@@ -10,7 +10,7 @@ import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui
 import CreateForm from '../CreateTransaction';
 import CreditCardImport from '../CreditCardImport';
 import {connect} from 'react-redux';
-import {deleteSelected} from '../../actions/index'
+import * as actions from '../../actions/index';
 
 class CustomToolbar extends React.Component {
 
@@ -22,14 +22,23 @@ class CustomToolbar extends React.Component {
     };
   }
 
-  handleChange = (event, index, value) => this.setState({value});
+  handleCurrentMonthChange = (event, index, value) => {
+      const { updateCurrentMonth } = this.props;
+      updateCurrentMonth(value);
+  };
+
+  handleCurrentYearChange = (event, index, value) => {
+      const { updateCurrentYear } = this.props;
+      updateCurrentYear(value);
+  };
 
   handleActionsMenu = (event, value) => {
     this.setState({[value]: true});
   };
 
   handleDelete = () => {
-     this.props.dispatch(deleteSelected(this.props.selected));
+     const { dispatch, deleteSelected, selected} = this.props;
+     deleteSelected(selected);
   };
 
   closeModals = () => {
@@ -59,14 +68,14 @@ class CustomToolbar extends React.Component {
                   <MenuItem primaryText="Create" value="showCreate"/>
                   <MenuItem primaryText="Import" value="showImport"/>
                 </IconMenu>
-                <DropDownMenu value={this.props.currentMonth} onChange={this.handleChange}>
+                <DropDownMenu value={this.props.currentMonth} onChange={this.handleCurrentMonthChange}>
                     {months.map((month, i) => {
                         return (
                             <MenuItem key={i} value={i} primaryText={month} />
                         )
                     })}
                  </DropDownMenu>
-                 <DropDownMenu value={this.props.currentYear} onChange={this.handleChange}>
+                 <DropDownMenu value={this.props.currentYear} onChange={this.handleCurrentYearChange}>
                      {years.map((year) => {
                          return (
                              <MenuItem key={year} value={year} primaryText={year} />
@@ -89,4 +98,4 @@ export default connect((state) => ({
     currentYear: state.transactions.currentYear,
     currentMonth: state.transactions.currentMonth,
     selected: state.transactions.selected
-}))(CustomToolbar);
+}), actions)(CustomToolbar);

@@ -47,6 +47,7 @@ class TransactionList extends React.Component {
                             <TableHeaderColumn>Date</TableHeaderColumn>
                             <TableHeaderColumn>Description</TableHeaderColumn>
                             <TableHeaderColumn>Category</TableHeaderColumn>
+                            <TableHeaderColumn>Type</TableHeaderColumn>
                             <TableHeaderColumn>Amount</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
@@ -59,6 +60,7 @@ class TransactionList extends React.Component {
                                 <TableRowColumn>{ transaction.date }</TableRowColumn>
                                 <TableRowColumn>{ transaction.description }</TableRowColumn>
                                 <TableRowColumn>{ transaction.category }</TableRowColumn>
+                                <TableRowColumn>{ transaction.creditCardType }</TableRowColumn>
                                 <TableRowColumn>{ transaction.amount }</TableRowColumn>
                             </TableRow>
                         ))}

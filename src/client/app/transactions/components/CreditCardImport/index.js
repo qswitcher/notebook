@@ -11,7 +11,7 @@ class CreditCardImport extends React.Component {
     handleImport = (values) =>  {
         const dispatch = this.props.dispatch;
         dispatch(importTransactions(values));
-        this.handleClose();
+        this.props.handleClose();
     };
 
     render() {

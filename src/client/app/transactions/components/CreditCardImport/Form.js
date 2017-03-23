@@ -13,6 +13,9 @@ const validate = (values) => {
     if (!values.transactionFile) {
         errors.date = 'Required';
     }
+    if (!values.creditCardType) {
+        errors.creditCardType = 'Type required';
+    }
     return errors;
 };
 
@@ -65,13 +68,12 @@ class Form extends React.Component {
                     component={renderDropzoneInput}
                 />
                 <Field
-                    name="importType"
+                    name="creditCardType"
                     component={SelectField}
                     hintText="Type">
-                    <MenuItem value="citi" primaryText="Citi Bank Credit Card"/>
-                    <MenuItem value="amex" primaryText="American Express"/>
-                    <MenuItem value="amazon" primaryText="Amazon Credit Card"/>
-                    <MenuItem value="ally" primaryText="Ally Bank Statement" />
+                    <MenuItem value="Citi" primaryText="Citi Bank Credit Card"/>
+                    <MenuItem value="Amex" primaryText="American Express"/>
+                    <MenuItem value="Amazon" primaryText="Amazon Credit Card"/>
                 </Field>
             </form>
         );

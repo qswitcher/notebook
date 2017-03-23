@@ -11,7 +11,7 @@ export function newTransaction() {
 
 export function fetchTransactions(params) {
     let query = '';
-    if (Object.keys(params)) {
+    if (params && Object.keys(params)) {
         query = Object.keys(params)
         .map((key) => `${key}=${params[key]}`)
         .join('&');
@@ -58,7 +58,7 @@ export function deleteTransaction(transaction) {
 
 export function importTransactions(data) {
     let body = new FormData();
-    body.append('importType', data.importType);
+    body.append('creditCardType', data.creditCardType);
     for (let i = 0; i < data.importFile.length; i++) {
         body.append(`importFile[${i}]`, data.importFile[i]);
     }
@@ -81,7 +81,7 @@ export function selectTransactions(indices) {
             type: actions.SELECT_ALL
         }
     }
-    
+
     return {
         type: actions.SELECT_TRANSACTIONS,
         payload: indices

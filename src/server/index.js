@@ -2,7 +2,9 @@ import path from 'path';
 import Express from 'express';
 import transactions from './transactions/router';
 import bodyParser from 'body-parser';
-import connect from './db';
+import mongoose from 'mongoose';
+
+mongoose.connect('mongodb://localhost:27017/finaces');
 
 export default function(db) {
     const app = new Express();

@@ -4,7 +4,7 @@ import * as actions from './actions/types';
 const today = new Date();
 const INITIAL_STATE = {
     all: [],
-    currentMonth: today.getMonth() + 1,
+    currentMonth: today.getMonth(),
     currentYear: today.getFullYear(),
     selected: []
 };

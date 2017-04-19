@@ -49,7 +49,6 @@ class TransactionList extends React.Component {
 
         return (
             <div >
-                <h1>Transactions</h1>
                 <Toolbar/>
                 <Table
                     selectable={true}

@@ -1,5 +1,5 @@
-@import "normalize.css/normalize.css";
-@import "./reset.less";
+// @import "normalize.css/normalize.css";
+// @import "./reset.less";
 
 /* apply a natural box layout model to all elements, but allowing components to change */
 html {
@@ -15,16 +15,18 @@ html {
     left: 0;
     bottom: 0;
     right: 0;
+    overflow-y: scroll;
+    background-color: rgb(232, 232, 232);
 }
 
 .main {
-    margin-left: 73px;
+    margin: 40px;
 }
 
+//
+// h1 {
+//     padding: 20px;
+//     font-size: 20pt;
+// }
 
-h1 {
-    padding: 20px;
-    font-size: 20pt;
-}
-
-@import "./common.less";
+// @import "./common.less";

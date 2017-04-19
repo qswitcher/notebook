@@ -1,9 +1,9 @@
 import React from 'react';
-import styles from './styles.less';
+
 
 class FinanceApp extends React.Component {
     render() {
-        return <div className={styles['transactions-container']}>
+        return <div>
                 {this.props.children}
             </div>
     }

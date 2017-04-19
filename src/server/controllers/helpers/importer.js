@@ -5,6 +5,7 @@ import async from 'async';
 
 const mappers = {
     [CITI]: (row) => {
+        console.log(row);
         let credit = row['Credit'] || '0';
         let debit = row['Debit'] || '0';
         let amount = credit - debit;

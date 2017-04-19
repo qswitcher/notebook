@@ -54,10 +54,13 @@ const renderDropzoneInput = (field) => {
 }
 
 class Form extends React.Component {
-    onDrop(acceptedFiles, rejectedFiles) {
-        const {dispatch} = this.props;
-        this.setState({files: acceptedFiles});
-    }
+    fileChange = (file) => {
+        const { autofill } = this.props;
+        // get file name
+        const filename = file[0];
+        console.log(filename);
+        autofill('creditCardType', 'Amex');
+    };
 
     render() {
         const { handleSubmit, handleClose } = this.props;
@@ -66,6 +69,7 @@ class Form extends React.Component {
                 <Field
                     name='importFile'
                     component={renderDropzoneInput}
+                    onChange={this.fileChange}
                 />
                 <Field
                     name="creditCardType"

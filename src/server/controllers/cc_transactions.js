@@ -5,6 +5,7 @@ import path from 'path';
 import formidable from 'formidable';
 import { ObjectId } from 'mongodb';
 import { dbInserter } from './helpers/importer';
+import { CITI } from '../constants/credit_cards';
 
 export function list(req, res, next) {
     const today = new Date();
@@ -49,7 +50,7 @@ export function importTransactions(req, res, next) {
             return (callback) => {
                 const file = files[key];
                 const options = {
-                    coluns: true,
+                    columns: creditCardType === CITI,
                     trim: true,
                     auto_parse_date: true,
                     auto_parse: true,

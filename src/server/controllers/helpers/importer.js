@@ -1,7 +1,7 @@
-import CCTransaction from '../../models/cc_transaction';
-import { ObjectId } from 'mongodb';
-import { AMEX, CITI } from '../../constants/credit_cards';
-import async from 'async';
+const CCTransaction = require('../../models/cc_transaction');
+const ObjectId = require('mongodb').ObjectId;
+const { AMEX, CITI } = require('../../constants/credit_cards');
+const async = require('async');
 
 const mappers = {
     [CITI]: (row) => {
@@ -31,7 +31,7 @@ const mappers = {
     }
 };
 
-export function dbInserter(creditCardType, data, callback) {
+module.exports.dbInserter = (creditCardType, data, callback) => {
     // send to DB
     const transactionSaveTasks = data.map((row) => {
         return (cb) => {

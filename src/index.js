@@ -1,6 +1,4 @@
-import Server from './server';
-
-const app = Server();
+const app = require('./server/app');
 const port = process.env.PORT || 3001;
 
 if (process.env.NODE_ENV !== 'production') {

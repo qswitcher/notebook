@@ -63,6 +63,11 @@ export default function(state = INITIAL_STATE, action) {
             ...state,
             selected: pullAt(state.all.slice(0), action.payload)
         }
+        case actions.FETCH_STATISTICS:
+        return {
+            ...state,
+            statistics: action.payload
+        }
         default:
         return state;
     }

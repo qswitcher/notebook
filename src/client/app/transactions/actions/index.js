@@ -11,11 +11,9 @@ export function newTransaction() {
 
 export function fetchTransactions(params) {
     let query = '';
-    if (params && Object.keys(params)) {
-        query = Object.keys(params)
-        .map((key) => `${key}=${params[key]}`)
-        .join('&');
-        query = '?' + query;
+    if (params) {
+        const {currentYear, currentMonth} = params;
+        query = `?year=${currentYear}&month=${currentMonth+1}`;
     }
     const request = axios.get(`${ROOT_URL}${query}`);
 
@@ -27,7 +25,25 @@ export function fetchTransactions(params) {
                 });
             });
     };
-}
+};
+
+export function fetchStatistics(params) {
+    let query = '';
+    if (params) {
+        const {currentYear} = params;
+        query = `?year=${currentYear}`;
+    }
+    const request = axios.get(`${ROOT_URL}/statistics${query}`);
+
+    return (dispatch) => {
+            request.then(({data}) => {
+                dispatch({
+                    type: actions.FETCH_STATISTICS,
+                    payload: data
+                });
+            });
+    };
+};
 
 export function createTransaction(transaction) {
     const request = axios.post(`${ROOT_URL}`, transaction);

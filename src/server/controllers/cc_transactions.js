@@ -37,8 +37,12 @@ module.exports.statistics = (req, res, next) => {
         docs.forEach((item) => {
             const date = datetimeToDateString(item.date);
             const month = +(date.split('-')[1]);
-            statistics[month - 1].sum += -1*parseFloat(item.amount);
-            statistics[month - 1][item.creditCardType.toLowerCase()] += -1*parseFloat(item.amount);
+            // want to skip auto payments for computing statistics since we pay off the balance
+            // each month
+            if (!item.description || item.description.toLowerCase().indexOf('autopay') === -1) {
+                statistics[month - 1].sum += parseFloat(item.amount);
+                statistics[month - 1][item.creditCardType.toLowerCase()] += parseFloat(item.amount);
+            }
         });
 
         statistics.forEach((item) => {

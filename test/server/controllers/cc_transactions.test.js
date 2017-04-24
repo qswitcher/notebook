@@ -3,6 +3,8 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../../../src/server/app');
 const CCTransaction = require('../../../src/server/models/cc_transaction');
+const fs = require('fs');
+const path = require('path');
 
 describe('CCTransactions controller', () => {
     it('pases', () => {
@@ -51,38 +53,45 @@ describe('CCTransactions controller', () => {
 
     describe('#statistics', () => {
         it('returns statistics for given year', (done) => {
-            request(app)
-                .get('/api/transactions/statistics?year=2016')
-                .end((err, response) => {
-                    expect(response.body[2]).to.deep.eq({
-                        date: '2016-03',
-                        sum: 1,
-                        amazon: 0,
-                        amex: 1,
-                        citi: 0,
-                        discover: 0,
-                        marriott: 0
-                    })
-                    expect(response.body[3]).to.deep.eq({
-                        date: '2016-04',
-                        sum: 1,
-                        amazon: 0,
-                        amex: 1,
-                        citi: 0,
-                        discover: 0,
-                        marriott: 0
-                    })
-                    expect(response.body[4]).to.deep.eq({
-                        date: '2016-05',
-                        sum: 5.5,
-                        amazon: 0,
-                        amex: 2.1,
-                        citi: 3.4,
-                        discover: 0,
-                        marriott: 0
+            new CCTransaction({
+                date: Date.parse('2016-05-10'),
+                amount: -100,
+                description: 'AUTOPAY 999990000055374RAUTOPAY AUTO-PMT',
+                creditCardType: 'Citi'
+            }).save().then(() => {
+                request(app)
+                    .get('/api/transactions/statistics?year=2016')
+                    .end((err, response) => {
+                        expect(response.body[2]).to.deep.eq({
+                            date: '2016-03',
+                            sum: '1.00',
+                            amazon: '0.00',
+                            amex: '1.00',
+                            citi: '0.00',
+                            discover: '0.00',
+                            marriott: '0.00'
+                        })
+                        expect(response.body[3]).to.deep.eq({
+                            date: '2016-04',
+                            sum: '1.00',
+                            amazon: '0.00',
+                            amex: '1.00',
+                            citi: '0.00',
+                            discover: '0.00',
+                            marriott: '0.00'
+                        })
+                        expect(response.body[4]).to.deep.eq({
+                            date: '2016-05',
+                            sum: '5.50',
+                            amazon: '0.00',
+                            amex: '2.10',
+                            citi: '3.40',
+                            discover: '0.00',
+                            marriott: '0.00'
+                        });
+                        done();
                     });
-                    done();
-                });
+            });
         });
     });
 
@@ -115,6 +124,39 @@ describe('CCTransactions controller', () => {
                     expect(transaction.date).to.eq('2016-04-02');
                     done();
                 });
+        });
+    });
+
+    describe('#import', () => {
+        describe('CITI bank upload', () => {
+            it('happy path', (done) => {
+                const citiPath = path.join(__dirname, '../../fixtures/citi_upload.csv');
+                request(app)
+                 .post('/api/transactions/import')
+                 .attach('file', citiPath)
+                 .type('form')
+                 .field({creditCardType: 'Citi'})
+                 .expect(200)
+                 .end(function(error, res){
+                     const p1 = CCTransaction.findOne({description: 'THE HOME DEPOT #0509   AUSTIN        TX'});
+                     const p2 = CCTransaction.findOne({description: 'NEST LABS              08554696378   CA'});
+                     Promise.all([p1, p2])
+                        .then(transactions => {
+                            const t1 = transactions[0];
+                            const t2 = transactions[1];
+                            expect(t1.amount).to.eq(155.72);
+                            expect(t1.creditCardType).to.eq('Citi');
+
+                            expect(t2.amount).to.eq(-376.71);
+                            expect(t2.creditCardType).to.eq('Citi');
+                            done();
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            throw err;
+                        });
+                 });
+             });
         });
     });
 });

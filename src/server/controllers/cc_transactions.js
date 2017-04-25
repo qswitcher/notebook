@@ -4,8 +4,7 @@ const async = require('async');
 const path = require('path');
 const formidable = require('formidable');
 const ObjectId  =  require('mongodb').ObjectId;
-const dbInserter = require('./helpers/importer').dbInserter;
-const { CITI } = require('../constants/credit_cards');
+const transactionImporter = require('./helpers/importer');
 const CardTypes = require('../constants/credit_cards');
 
 function datetimeToDateString(date) {
@@ -87,28 +86,9 @@ module.exports.importTransactions = (req, res, next) => {
             return res.status(422).send({ error: 'You must provide a credit card type'});
         }
 
-        let tasks = Object.keys(files).map((key) => {
-            return (callback) => {
-                const file = files[key];
-                const options = {
-                    columns: creditCardType === CITI,
-                    trim: true,
-                    auto_parse_date: true,
-                    auto_parse: true,
-                    skip_empty_lines: true,
-                    relax: true
-                };
-
-                let parser = csv.parse(options, function(err, data){
-                    if (err) {
-                        console.error(err);
-                        return callback(err);
-                    }
-                    dbInserter(creditCardType, data, callback);
-                });
-
-                fs.createReadStream(file.path).pipe(parser);
-            };
+        let tasks = Object.keys(files).map((key) => (callback) => {
+            let importer = transactionImporter(creditCardType, callback);
+            fs.createReadStream(files[key].path).pipe(importer);
         });
 
         async.parallel(tasks, function(err, results) {

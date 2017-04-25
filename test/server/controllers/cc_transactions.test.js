@@ -145,10 +145,45 @@ describe('CCTransactions controller', () => {
                             const t1 = transactions[0];
                             const t2 = transactions[1];
                             expect(t1.amount).to.eq(155.72);
+                            expect(t1.date.toISOString().split('T')[0]).to.eq('2017-03-13')
                             expect(t1.creditCardType).to.eq('Citi');
 
                             expect(t2.amount).to.eq(-376.71);
+                            expect(t2.date.toISOString().split('T')[0]).to.eq('2017-03-15')
                             expect(t2.creditCardType).to.eq('Citi');
+                            done();
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            throw err;
+                        });
+                 });
+             });
+        });
+
+        describe('Amex bank upload', () => {
+            it('happy path', (done) => {
+                const citiPath = path.join(__dirname, '../../fixtures/amex_upload.csv');
+                request(app)
+                 .post('/api/transactions/import')
+                 .attach('file', citiPath)
+                 .type('form')
+                 .field({creditCardType: 'Amex'})
+                 .expect(200)
+                 .end(function(error, res){
+                     const p1 = CCTransaction.findOne({description: 'WHOLE FOODS MARKET - AUSTIN, TX'});
+                     const p2 = CCTransaction.findOne({description: 'AUTOPAY PAYMENT RECEIVED - THANK YOU'});
+                     Promise.all([p1, p2])
+                        .then(transactions => {
+                            const t1 = transactions[0];
+                            const t2 = transactions[1];
+                            expect(t1.amount).to.eq(21.64);
+                            expect(t1.date.toISOString().split('T')[0]).to.eq('2017-03-31')
+                            expect(t1.creditCardType).to.eq('Amex');
+
+                            expect(t2.amount).to.eq(-1000.34);
+                            expect(t2.date.toISOString().split('T')[0]).to.eq('2017-03-30')
+                            expect(t2.creditCardType).to.eq('Amex');
                             done();
                         })
                         .catch(err => {

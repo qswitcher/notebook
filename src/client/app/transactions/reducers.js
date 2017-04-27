@@ -40,6 +40,7 @@ export default function(state = INITIAL_STATE, action) {
         case actions.DELETE_TRANSACTION:
         return {
             ...state,
+            selected: [],
             all: state.all.filter(transaction => transaction['_id'] !== action.payload)
         };
         case actions.DELETE_TRANSACTIONS:

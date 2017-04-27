@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const CCTransaction = require('../src/server/models/cc_transaction');
 
 before(done => {
     mongoose.connect('mongodb://localhost/finances_test');
@@ -13,6 +14,7 @@ before(done => {
 beforeEach(done => {
     const { cctransactions } = mongoose.connection.collections;
     cctransactions.drop()
+        .then(() => CCTransaction.ensureIndexes())
         .then(() => done())
         .catch((err) => {
             console.warn(err);

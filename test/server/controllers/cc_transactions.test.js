@@ -192,6 +192,27 @@ describe('CCTransactions controller', () => {
                         });
                  });
              });
+
+             it('should skip repeated entires', function(done) {
+                 const citiPath = path.join(__dirname, '../../fixtures/amex_upload_repeated_entries.csv');
+                 request(app)
+                  .post('/api/transactions/import')
+                  .attach('file', citiPath)
+                  .type('form')
+                  .field({creditCardType: 'Amex'})
+                  .expect(200)
+                  .end(function(error, res) {
+                      CCTransaction.find({description: 'WHOLE FOODS MARKET - AUSTIN, TX'})
+                        .then(transactions => {
+                            expect(transactions.length).to.eq(1);
+                            done();
+                        })
+                         .catch(err => {
+                             console.log(err);
+                             throw err;
+                         });
+                  });
+             });
         });
     });
 });

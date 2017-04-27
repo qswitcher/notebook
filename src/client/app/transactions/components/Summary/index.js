@@ -1,9 +1,9 @@
 import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from 'recharts';
 import React from 'react';
 import { connect } from 'react-redux';
-import * as actions from '../actions/index';
+import * as actions from '../../actions/index';
 
-class SpendingChart extends React.Component {
+class Summary extends React.Component {
     componentWillMount() {
         const { currentYear, fetchStatistics } = this.props;
         fetchStatistics({
@@ -37,4 +37,4 @@ class SpendingChart extends React.Component {
 export default connect(state => ({
     statistics: state.transactions.statistics,
     currentYear: state.transactions.currentYear
-}), actions)(SpendingChart);
+}), actions)(Summary);

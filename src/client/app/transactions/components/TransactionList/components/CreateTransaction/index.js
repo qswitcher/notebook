@@ -8,7 +8,7 @@ import Dialog from 'material-ui/Dialog';
 import { SelectField, TextField } from 'redux-form-material-ui';
 import { submit } from 'redux-form';
 import { connect } from 'react-redux';
-import { createTransaction } from '../../actions/index';
+import { createTransaction } from '../../../../actions/index';
 
 import Form from './Form';
 

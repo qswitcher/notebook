@@ -7,10 +7,10 @@ import MenuItem from 'material-ui/MenuItem';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-import CreateForm from '../CreateTransaction';
-import CreditCardImport from '../CreditCardImport';
+import CreateForm from './CreateTransaction';
+import CreditCardImport from './CreditCardImport';
 import {connect} from 'react-redux';
-import * as actions from '../../actions/index';
+import * as actions from '../../../actions/index';
 
 class CustomToolbar extends React.Component {
 
@@ -68,13 +68,16 @@ class CustomToolbar extends React.Component {
                   <MenuItem primaryText="Create" value="showCreate"/>
                   <MenuItem primaryText="Import" value="showImport"/>
                 </IconMenu>
-                <DropDownMenu value={this.props.currentMonth} onChange={this.handleCurrentMonthChange}>
+                <FontIcon className="material-icons">chevron_left</FontIcon>
+                <DropDownMenu labelStyle={{lineHeight: '48px'}} value={this.props.currentMonth} onChange={this.handleCurrentMonthChange}>
                     {months.map((month, i) => {
                         return (
                             <MenuItem key={i} value={i} primaryText={month} />
                         )
                     })}
                  </DropDownMenu>
+                 <FontIcon className="material-icons">chevron_right</FontIcon>
+                 <FontIcon className="material-icons">chevron_left</FontIcon>
                  <DropDownMenu value={this.props.currentYear} onChange={this.handleCurrentYearChange}>
                      {years.map((year) => {
                          return (
@@ -82,12 +85,12 @@ class CustomToolbar extends React.Component {
                          )
                      })}
                   </DropDownMenu>
+                  <FontIcon className="material-icons">chevron_right</FontIcon>
             </ToolbarGroup>
             <ToolbarGroup>
-          <ToolbarTitle />
-              <ToolbarSeparator />
-              <RaisedButton label="Delete Selected" secondary={true} onTouchTap={this.handleDelete} />
-            </ToolbarGroup>
+                 <ToolbarSeparator />
+                 <RaisedButton label="Delete Selected" secondary={true} onTouchTap={this.handleDelete} />
+             </ToolbarGroup>
           </Toolbar>
       </div>
     );

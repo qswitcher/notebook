@@ -2,7 +2,7 @@ import React from 'react';
 import Form from './Form';
 import { connect } from 'react-redux';
 import { submit } from 'redux-form'
-import { importTransactions } from '../../actions/index';
+import { importTransactions } from '../../../../actions/index';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';

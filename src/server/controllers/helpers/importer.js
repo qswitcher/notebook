@@ -1,6 +1,7 @@
 const CCTransaction = require('../../models/cc_transaction');
 const ObjectId = require('mongodb').ObjectId;
 const { AMEX, CITI } = require('../../constants/credit_cards');
+const Categories = require('../../constants/categories');
 const async = require('async');
 const csv = require('csv');
 
@@ -12,18 +13,30 @@ const baseOptions = {
     relax: true
 };
 
+const description2category = (description) => {
+
+};
+
+const parseFloatIgnoreCommas = (number) => {
+    if (typeof number === 'string') {
+        return parseFloat(number.replace(/,/g, ''));
+    }
+    return number;
+};
+
 const mappers = {
     [CITI]: {
         inserter: (row) => {
-            let credit = row['Credit'] || '0';
-            let debit = row['Debit'] || '0';
-            let amount = debit - credit;
-            return {
+            let credit = row['Credit'] || 0;
+            let debit = row['Debit'] || 0;
+            let amount = parseFloatIgnoreCommas(debit) - parseFloatIgnoreCommas(credit);
+            let data = {
                 date: row['Date'],
                 amount,
                 description: row['Description'],
                 creditCardType: CITI
             };
+            return data;
         },
         options: Object.assign({}, baseOptions, {
             columns: true
@@ -50,7 +63,15 @@ const dbInserter = (creditCardType, data, callback) => {
     const transactionSaveTasks = data.map((row) => (cb) => {
         const transaction = new CCTransaction(mappers[creditCardType].inserter(row));
         transaction.save((err) => {
-            if (err) { return cb(err) }
+            if (err && err.code == 11000) {
+                // transaction was already inserted, skip
+                return cb(null, transaction);
+            }
+
+            if (err) {
+                console.error(err);
+                return cb(err)
+            }
             return cb(null, transaction);
         });
     });

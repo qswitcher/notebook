@@ -4,8 +4,7 @@ import { connect } from 'react-redux';
 import * as actions from '../../actions/index';
 import { SELECT_TRANSACTIONS } from '../../actions/types';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
-import DatePicker from './DatePicker';
-import Toolbar from './Toolbar';
+import Toolbar from './components/Toolbar';
 
 class TransactionList extends React.Component {
     handleSelected = (indices) => {

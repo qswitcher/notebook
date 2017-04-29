@@ -10,7 +10,7 @@ class FinanceApp extends React.Component {
                 <CardHeader>
                     <div>
                         <FlatButtonLink to="/transactions/list">Transactions</FlatButtonLink>
-                        <FlatButtonLink  to="/transactions/summary">Summary</FlatButtonLink>
+                        <FlatButtonLink to="/transactions/summary">Summary</FlatButtonLink>
                     </div>
                 </CardHeader>
                 <CardText>

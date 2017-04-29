@@ -1,15 +1,14 @@
 const expect = require('chai').expect;
+const assert = require('chai').assert;
 const request = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../../../src/server/app');
 const CCTransaction = require('../../../src/server/models/cc_transaction');
+const CategoryMapping = require('../../../src/server/models/category_mapping');
 const fs = require('fs');
 const path = require('path');
 
 describe('CCTransactions controller', () => {
-    it('pases', () => {
-        expect(true).to.eq(true);
-    });
     beforeEach((done) => {
         const todayTransaction = new CCTransaction({
             date: new Date(),
@@ -155,7 +154,8 @@ describe('CCTransactions controller', () => {
                         })
                         .catch(err => {
                             console.log(err);
-                            throw err;
+                            assert.ifError(err);
+                            done();
                         });
                  });
              });
@@ -208,10 +208,43 @@ describe('CCTransactions controller', () => {
                             done();
                         })
                          .catch(err => {
-                             console.log(err);
-                             throw err;
+                             assert.ifError(err);
+                             done();
                          });
                   });
+             });
+
+             it('auto adds category if available', function(done) {
+                 const mapping = new CategoryMapping({
+                     value: 'WHOLE FOODS MARKET - AUSTIN, TX',
+                     category: 'Groceries'
+                 });
+
+                 mapping.save()
+                    .then(() => {
+                        const citiPath = path.join(__dirname, '../../fixtures/amex_upload.csv');
+                        request(app)
+                         .post('/api/transactions/import')
+                         .attach('file', citiPath)
+                         .type('form')
+                         .field({creditCardType: 'Amex'})
+                         .expect(200)
+                         .end(function(error, res) {
+                             CCTransaction.findOne({description: 'WHOLE FOODS MARKET - AUSTIN, TX'})
+                               .then(t => {
+                                   expect(t.category).to.eq('Groceries');
+                                   done();
+                               })
+                                .catch(err => {
+                                    console.log(err);
+                                    throw err;
+                                });
+                         });
+                    })
+                    .catch(err => {
+                        assert.ifError(err);
+                        done();
+                    });
              });
         });
     });

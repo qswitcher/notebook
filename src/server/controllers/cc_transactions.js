@@ -81,6 +81,9 @@ module.exports.importTransactions = (req, res, next) => {
     const csv = require('csv');
 
     form.parse(req, function(err, fields, files) {
+        if (err) {
+            return res.status(500).send(err);
+        }
         const creditCardType = fields.creditCardType;
         if (!creditCardType) {
             return res.status(422).send({ error: 'You must provide a credit card type'});
@@ -92,6 +95,9 @@ module.exports.importTransactions = (req, res, next) => {
         });
 
         async.parallel(tasks, function(err, results) {
+            if (err) {
+                return res.status(500).send(err);
+            }
             res.end('success');
         });
     });

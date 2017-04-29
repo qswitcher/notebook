@@ -1,6 +1,7 @@
 const path = require('path');
 const Express = require('express');
-const transactions = require('./transactions/router');
+const transactions = require('./routers/transactions');
+const categoryMappings = require('./routers/category_mappings');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
@@ -21,6 +22,7 @@ app.use(bodyParser.json());
 
 // endpoints
 app.use('/api/transactions', transactions);
+app.use('/api/mappings', categoryMappings);
 
 // app.use('/dist', publicPath);
 

@@ -56,7 +56,18 @@ export function createTransaction(transaction) {
                 });
             });
     };
-}
+};
+
+export function updateTransaction(transaction) {
+    const request = axios.put(`${ROOT_URL}/${transaction._id}`, transaction);
+
+    return (dispatch) => {
+            request.then(() => fetchTransactions({
+                currentMonth: 3,
+                currentYear: 2017
+            })(dispatch));
+    };
+};
 
 export function deleteTransaction(transaction) {
     const id = transaction['_id'];

@@ -73,6 +73,22 @@ module.exports.list = (req, res, next) => {
     });
 }
 
+module.exports.update = (req, res) => {
+    const id = req.params.id;
+    const body = req.body;
+    CCTransaction.findOne({_id: id})
+        .then(t => {
+            CCTransaction.update({description: t.description}, {category: body.category}, {multi: true})
+                .then(() => {
+                    return res.json({id})
+                })
+                .catch(err => {
+                    return res.status(500).send(err);
+                });
+        })
+        .catch(err => res.status(500).send(err));
+};
+
 module.exports.importTransactions = (req, res, next) => {
     let form = new formidable.IncomingForm();
 

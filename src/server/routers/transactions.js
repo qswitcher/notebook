@@ -7,6 +7,7 @@ const formidable = require('formidable');
 const CCTransaction = require('../controllers/cc_transactions');
 
 router.get('/', CCTransaction.list);
+router.put('/:id', CCTransaction.update);
 router.get('/statistics', CCTransaction.statistics);
 
 // router.post('/', (req, res) => {

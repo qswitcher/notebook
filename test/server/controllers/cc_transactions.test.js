@@ -8,6 +8,8 @@ const CategoryMapping = require('../../../src/server/models/category_mapping');
 const fs = require('fs');
 const path = require('path');
 
+let march2016;
+
 describe('CCTransactions controller', () => {
     beforeEach((done) => {
         const todayTransaction = new CCTransaction({
@@ -16,7 +18,7 @@ describe('CCTransactions controller', () => {
             description: 'A charge',
             creditCardType: 'Amex'
         });
-        const march2016 = new CCTransaction({
+        march2016 = new CCTransaction({
             date: Date.parse('2016-03-02'),
             amount: 1,
             description: 'March charge',
@@ -44,10 +46,7 @@ describe('CCTransactions controller', () => {
             .then((values) => {
                 done();
             })
-            .catch(err => {
-                console.warn('something went wrong');
-                throw err;
-            });
+            .catch(err => done(err));
     });
 
     describe('#statistics', () => {
@@ -61,6 +60,9 @@ describe('CCTransactions controller', () => {
                 request(app)
                     .get('/api/transactions/statistics?year=2016')
                     .end((err, response) => {
+                        if (err) {
+                            return done(err);
+                        }
                         expect(response.body[2]).to.deep.eq({
                             date: '2016-03',
                             sum: '1.00',
@@ -99,6 +101,9 @@ describe('CCTransactions controller', () => {
             request(app)
                 .get('/api/transactions')
                 .end((err, response) => {
+                    if (err) {
+                        return done(err);
+                    }
                     expect(response.body.length).to.eq(1);
 
                     const transaction = response.body[0];
@@ -114,6 +119,9 @@ describe('CCTransactions controller', () => {
             request(app)
                 .get('/api/transactions?month=4&year=2016')
                 .end((err, response) => {
+                    if (err) {
+                        return done(err);
+                    }
                     expect(response.body.length).to.eq(1);
 
                     const transaction = response.body[0];
@@ -126,8 +134,61 @@ describe('CCTransactions controller', () => {
         });
     });
 
+    describe('#update', () => {
+        it('correctly updates transaction', (done) => {
+            const t1 = new CCTransaction({
+                amount: 1,
+                description: 'Home Depot Store #123',
+                date: Date.parse('2015-03-02'),
+                creditCardType: 'Amex'
+            });
+            const t2 = new CCTransaction({
+                amount: 2,
+                description: 'Home Depot Store #123',
+                date: Date.parse('2015-03-03'),
+                creditCardType: 'Amex'
+            });
+            const mapping = new CategoryMapping({
+                value: 'Home Depot Store #123',
+                category: 'Home Improvement'
+            });
+
+            Promise.all([t1.save(),t2.save()])
+                .then(() => {
+                    request(app)
+                        .put(`/api/transactions/${t1._id}`)
+                        .send({
+                            category: 'Home Improvement'
+                        })
+                        .expect(200)
+                        .end((err, response) => {
+                            if (err) {
+                                return done(err);
+                            }
+
+                            const tp1 = CCTransaction.findOne({_id: t1._id});
+                            const tp2 = CCTransaction.findOne({_id: t2._id});
+                            Promise.all([tp1, tp2])
+                                .then(values => {
+                                    expect(values[0].category).to.eq('Home Improvement');
+                                    expect(values[0].description).to.eq(t1.description);
+                                    expect(values[0].amount).to.eq(t1.amount);
+                                    expect(values[0].creditCardType).to.eq(t1.creditCardType);
+
+                                    expect(values[1].category).to.eq('Home Improvement');
+                                    expect(values[1].description).to.eq(t2.description);
+                                    expect(values[1].amount).to.eq(t2.amount);
+                                    expect(values[1].creditCardType).to.eq(t2.creditCardType);
+                                    done();
+                                })
+                                .catch(err => done(err));
+                        });
+                });
+        });
+    });
+
     describe('#import', () => {
-        describe('CITI bank upload', () => {
+        describe('CITI bank upload with payment', () => {
             it('happy path', (done) => {
                 const citiPath = path.join(__dirname, '../../fixtures/citi_upload.csv');
                 request(app)
@@ -137,6 +198,9 @@ describe('CCTransactions controller', () => {
                  .field({creditCardType: 'Citi'})
                  .expect(200)
                  .end(function(error, res){
+                     if (error) {
+                         return done(error);
+                     }
                      const p1 = CCTransaction.findOne({description: 'THE HOME DEPOT #0509   AUSTIN        TX'});
                      const p2 = CCTransaction.findOne({description: 'NEST LABS              08554696378   CA'});
                      Promise.all([p1, p2])
@@ -152,11 +216,32 @@ describe('CCTransactions controller', () => {
                             expect(t2.creditCardType).to.eq('Citi');
                             done();
                         })
-                        .catch(err => {
-                            console.log(err);
-                            assert.ifError(err);
+                        .catch(err => done(err));
+                 });
+             });
+        });
+
+        describe('CITI bank upload with no payments', () => {
+            it('happy path', (done) => {
+                const citiPath = path.join(__dirname, '../../fixtures/citi_upload_no_payments.csv');
+                request(app)
+                 .post('/api/transactions/import')
+                 .attach('file', citiPath)
+                 .type('form')
+                 .field({creditCardType: 'Citi'})
+                 .expect(200)
+                 .end(function(error, res){
+                     if (error) {
+                         return done(error);
+                     }
+                     CCTransaction.findOne({description: 'SHARKNINJA SALES COMPA 08007987398   MA'})
+                        .then(t => {
+                            expect(t.amount).to.eq(364.29);
+                            expect(t.date.toISOString().split('T')[0]).to.eq('2017-04-24')
+                            expect(t.creditCardType).to.eq('Citi');
                             done();
-                        });
+                        })
+                        .catch(err => done(err));
                  });
              });
         });
@@ -171,6 +256,9 @@ describe('CCTransactions controller', () => {
                  .field({creditCardType: 'Amex'})
                  .expect(200)
                  .end(function(error, res){
+                     if (error) {
+                         return done(error);
+                     }
                      const p1 = CCTransaction.findOne({description: 'WHOLE FOODS MARKET - AUSTIN, TX'});
                      const p2 = CCTransaction.findOne({description: 'AUTOPAY PAYMENT RECEIVED - THANK YOU'});
                      Promise.all([p1, p2])
@@ -186,10 +274,7 @@ describe('CCTransactions controller', () => {
                             expect(t2.creditCardType).to.eq('Amex');
                             done();
                         })
-                        .catch(err => {
-                            console.log(err);
-                            throw err;
-                        });
+                        .catch(err => done(err));
                  });
              });
 
@@ -202,15 +287,15 @@ describe('CCTransactions controller', () => {
                   .field({creditCardType: 'Amex'})
                   .expect(200)
                   .end(function(error, res) {
+                      if (error) {
+                          return done(error);
+                      }
                       CCTransaction.find({description: 'WHOLE FOODS MARKET - AUSTIN, TX'})
                         .then(transactions => {
                             expect(transactions.length).to.eq(1);
                             done();
                         })
-                         .catch(err => {
-                             assert.ifError(err);
-                             done();
-                         });
+                         .catch(err => done(err));
                   });
              });
 
@@ -235,16 +320,10 @@ describe('CCTransactions controller', () => {
                                    expect(t.category).to.eq('Groceries');
                                    done();
                                })
-                                .catch(err => {
-                                    console.log(err);
-                                    throw err;
-                                });
+                                .catch(err => done(err));
                          });
                     })
-                    .catch(err => {
-                        assert.ifError(err);
-                        done();
-                    });
+                    .catch(err => done(err));
              });
         });
     });

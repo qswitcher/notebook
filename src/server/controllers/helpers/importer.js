@@ -10,7 +10,7 @@ const baseOptions = {
     auto_parse_date: true,
     auto_parse: true,
     skip_empty_lines: true,
-    relax: true
+    relax: false
 };
 
 const description2category = (description) => {
@@ -27,13 +27,14 @@ const parseFloatIgnoreCommas = (number) => {
 const mappers = {
     [CITI]: {
         inserter: (row) => {
+            console.log(row);
             let credit = row['Credit'] || 0;
             let debit = row['Debit'] || 0;
             let amount = parseFloatIgnoreCommas(debit) - parseFloatIgnoreCommas(credit);
             let data = {
                 date: row['Date'],
                 amount,
-                description: row['Description'],
+                description: row['Description'].trim(),
                 creditCardType: CITI
             };
             return data;
@@ -48,7 +49,7 @@ const mappers = {
             return {
                 date,
                 amount: row['Amount'],
-                description: row['Description'],
+                description: row['Description'].trim(),
                 creditCardType: AMEX
             };
         },

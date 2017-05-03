@@ -5,6 +5,7 @@ import * as actions from '../../actions/index';
 import { SELECT_TRANSACTIONS } from '../../actions/types';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 import Toolbar from './components/Toolbar';
+import CategoryDropdown from './components/CategoryDropdown';
 
 class TransactionList extends React.Component {
     handleSelected = (indices) => {
@@ -41,8 +42,13 @@ class TransactionList extends React.Component {
         deleteTransaction(id);
     }
 
+    handleUpdateCategory(category, transaction) {
+        const { updateTransaction } = this.props;
+        updateTransaction(Object.assign({}, transaction, {category}));
+    }
+
     render() {
-        const { creatingNewItem } = this.state;
+        const { creatingNewItem,  } = this.state;
         const { selected, all } = this.props;
         const transactions = all;
 
@@ -74,7 +80,7 @@ class TransactionList extends React.Component {
                             <TableRow key={index} selected={transaction.selected}>
                                 <TableRowColumn>{ transaction.date }</TableRowColumn>
                                 <TableRowColumn>{ transaction.description }</TableRowColumn>
-                                <TableRowColumn>{ transaction.category }</TableRowColumn>
+                                <TableRowColumn><CategoryDropdown value={transaction.category} onChange={(category) => this.handleUpdateCategory(category, transaction)}/></TableRowColumn>
                                 <TableRowColumn>{ transaction.creditCardType }</TableRowColumn>
                                 <TableRowColumn>{ transaction.amount }</TableRowColumn>
                             </TableRow>

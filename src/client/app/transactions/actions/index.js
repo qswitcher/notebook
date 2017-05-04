@@ -12,8 +12,10 @@ export function newTransaction() {
 export function fetchTransactions(params) {
     let query = '';
     if (params) {
-        const {currentYear, currentMonth} = params;
-        query = `?year=${currentYear}&month=${currentMonth+1}`;
+        const {year, month} = params;
+        if (year && month) {
+            query = `?year=${year}&month=${month}`;
+        }
     }
     const request = axios.get(`${ROOT_URL}${query}`);
 

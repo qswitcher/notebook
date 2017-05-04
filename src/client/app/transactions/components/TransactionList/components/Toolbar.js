@@ -11,6 +11,7 @@ import CreateForm from './CreateTransaction';
 import CreditCardImport from './CreditCardImport';
 import {connect} from 'react-redux';
 import * as actions from '../../../actions/index';
+import { browserHistory } from 'react-router'
 
 class CustomToolbar extends React.Component {
 
@@ -23,13 +24,27 @@ class CustomToolbar extends React.Component {
   }
 
   handleCurrentMonthChange = (event, index, value) => {
-      const { updateCurrentMonth } = this.props;
-      updateCurrentMonth(value);
+    //   const { updateCurrentMonth } = this.props;
+      browserHistory.push({
+          pathname: this.props.pathname,
+          query: {
+              year: this.props.query.year,
+              month: value + 1
+          }
+      });
+    //   updateCurrentMonth(value);
   };
 
   handleCurrentYearChange = (event, index, value) => {
-      const { updateCurrentYear } = this.props;
-      updateCurrentYear(value);
+    //   const { updateCurrentYear } = this.props;
+    //   updateCurrentYear(value);
+    browserHistory.push({
+        pathname: this.props.pathname,
+        query: {
+            year: value,
+            month: this.props.query.month
+        }
+    });
   };
 
   handleActionsMenu = (event, value) => {
@@ -49,6 +64,7 @@ class CustomToolbar extends React.Component {
   };
 
   render() {
+      const { year, month } = this.props.query;
       const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       const years = [2017, 2016];
     return (
@@ -69,7 +85,7 @@ class CustomToolbar extends React.Component {
                   <MenuItem primaryText="Import" value="showImport"/>
                 </IconMenu>
                 <FontIcon className="material-icons">chevron_left</FontIcon>
-                <DropDownMenu labelStyle={{lineHeight: '48px'}} value={this.props.currentMonth} onChange={this.handleCurrentMonthChange}>
+                <DropDownMenu labelStyle={{lineHeight: '48px'}} value={parseInt(month, 10) - 1} onChange={this.handleCurrentMonthChange}>
                     {months.map((month, i) => {
                         return (
                             <MenuItem key={i} value={i} primaryText={month} />
@@ -78,7 +94,7 @@ class CustomToolbar extends React.Component {
                  </DropDownMenu>
                  <FontIcon className="material-icons">chevron_right</FontIcon>
                  <FontIcon className="material-icons">chevron_left</FontIcon>
-                 <DropDownMenu value={this.props.currentYear} onChange={this.handleCurrentYearChange}>
+                 <DropDownMenu value={parseInt(year, 10)} onChange={this.handleCurrentYearChange}>
                      {years.map((year) => {
                          return (
                              <MenuItem key={year} value={year} primaryText={year} />
@@ -98,7 +114,5 @@ class CustomToolbar extends React.Component {
 }
 
 export default connect((state) => ({
-    currentYear: state.transactions.currentYear,
-    currentMonth: state.transactions.currentMonth,
     selected: state.transactions.selected
 }), actions)(CustomToolbar);

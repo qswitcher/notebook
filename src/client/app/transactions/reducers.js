@@ -4,23 +4,23 @@ import * as actions from './actions/types';
 const today = new Date();
 const INITIAL_STATE = {
     all: [],
-    currentMonth: today.getMonth(),
-    currentYear: today.getFullYear(),
+    // currentMonth: today.getMonth() + 1,
+    // currentYear: today.getFullYear(),
     selected: []
 };
 
 export default function(state = INITIAL_STATE, action) {
     switch(action.type) {
-        case actions.SET_CURRENT_MONTH:
-        return {
-            ...state,
-            currentMonth: action.payload
-        };
-        case actions.SET_CURRENT_YEAR:
-        return {
-            ...state,
-            currentYear: action.payload
-        };
+        // case actions.SET_CURRENT_MONTH:
+        // return {
+        //     ...state,
+        //     currentMonth: action.payload
+        // };
+        // case actions.SET_CURRENT_YEAR:
+        // return {
+        //     ...state,
+        //     currentYear: action.payload
+        // };
         case actions.SELECT_TRANSACTION:
         return {
             ...state,

@@ -15,25 +15,20 @@ class TransactionList extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {creatingNewItem: false};
         this.onDelete = this.onDelete.bind(this);
     }
 
     componentWillMount() {
-        const { currentYear, currentMonth, fetchTransactions } = this.props;
-        fetchTransactions({
-            currentYear,
-            currentMonth
-        });
+        const { fetchTransactions } = this.props;
+        fetchTransactions(this.props.location.query);
     }
 
     componentWillUpdate(nextProps) {
-        const { currentYear, currentMonth, fetchTransactions } = nextProps;
-        if (this.props.currentYear != currentYear || this.props.currentMonth != currentMonth) {
-            fetchTransactions({
-                currentYear,
-                currentMonth
-            });
+        const { fetchTransactions } = nextProps;
+        const query = this.props.location.query;
+        const nextQuery = nextProps.location.query;
+        if (query.year != nextQuery.year || query.month != nextQuery.month) {
+            fetchTransactions(nextQuery);
         }
     }
 
@@ -48,13 +43,12 @@ class TransactionList extends React.Component {
     }
 
     render() {
-        const { creatingNewItem,  } = this.state;
-        const { selected, all } = this.props;
+        const { selected, all, location } = this.props;
         const transactions = all;
 
         return (
             <div >
-                <Toolbar/>
+                <Toolbar {...location}/>
                 <Table
                     selectable={true}
                     stripedRows={true}

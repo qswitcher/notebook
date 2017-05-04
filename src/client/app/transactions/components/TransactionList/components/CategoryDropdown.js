@@ -9,7 +9,6 @@ const underlineStyle = {
 
 class CategoryDropdown extends React.Component {
     handleChange(event, key, value) {
-        console.log(value);
         this.props.onChange(value);
     }
 
@@ -18,7 +17,7 @@ class CategoryDropdown extends React.Component {
             <DropDownMenu underlineStyle={underlineStyle} value={this.props.value} onClick={(e) => e.stopPropagation()} onChange={this.handleChange.bind(this)}>
             {Object.values(Categories).map((category, i) => {
                 return (
-                    <MenuItem key={i} value={category} primaryText={category} />
+                    <MenuItem key={i} value={category} primaryText={category} className='category-dropdown-choice'/>
                 )
             })}
             </DropDownMenu>

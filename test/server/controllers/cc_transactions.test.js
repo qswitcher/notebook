@@ -188,7 +188,7 @@ describe('CCTransactions controller', () => {
     });
 
     describe('#import', () => {
-        describe('CITI bank upload with payment', () => {
+        describe('CITI bank upload', () => {
             it('happy path', (done) => {
                 const citiPath = path.join(__dirname, '../../fixtures/citi_upload.csv');
                 request(app)
@@ -219,11 +219,9 @@ describe('CCTransactions controller', () => {
                         .catch(err => done(err));
                  });
              });
-        });
 
-        describe('CITI bank upload with no payments', () => {
-            it('happy path', (done) => {
-                const citiPath = path.join(__dirname, '../../fixtures/citi_upload_no_payments.csv');
+            xit('correctly handles files with ^M characters', (done) => {
+                const citiPath = path.join(__dirname, '../../fixtures/MC_595_042417_043017.CSV');
                 request(app)
                  .post('/api/transactions/import')
                  .attach('file', citiPath)

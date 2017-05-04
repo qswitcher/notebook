@@ -27,7 +27,6 @@ const parseFloatIgnoreCommas = (number) => {
 const mappers = {
     [CITI]: {
         inserter: (row) => {
-            console.log(row);
             let credit = row['Credit'] || 0;
             let debit = row['Debit'] || 0;
             let amount = parseFloatIgnoreCommas(debit) - parseFloatIgnoreCommas(credit);
@@ -82,6 +81,8 @@ const dbInserter = (creditCardType, data, callback) => {
 
 module.exports = (creditCardType, callback) => {
     const options = mappers[creditCardType].options;
+
+    const csv = require('csv');
 
     return csv.parse(options, function(err, data){
         if (err) {

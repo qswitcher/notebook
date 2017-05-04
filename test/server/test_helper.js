@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const CCTransaction = require('../src/server/models/cc_transaction');
-const CategoryMapping = require('../src/server/models/category_mapping');
+const CCTransaction = require('../../src/server/models/cc_transaction');
+const CategoryMapping = require('../../src/server/models/category_mapping');
 
 before(done => {
     mongoose.connect('mongodb://localhost/finances_test');

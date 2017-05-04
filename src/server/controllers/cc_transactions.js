@@ -94,7 +94,6 @@ module.exports.importTransactions = (req, res, next) => {
 
     const readline = require('readline');
     const async = require('async');
-    const csv = require('csv');
 
     form.parse(req, function(err, fields, files) {
         if (err) {

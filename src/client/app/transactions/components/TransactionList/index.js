@@ -1,11 +1,8 @@
 import React from 'react';
-import styles from './styles.less';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/index';
-import { SELECT_TRANSACTIONS } from '../../actions/types';
-import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
-import Toolbar from './components/Toolbar';
-import CategoryDropdown from './components/CategoryDropdown';
+import { dateOrToday } from '../../../shared/utils/date_utils';
+import TransactionTable from './components/TransactionTable';
 
 class TransactionList extends React.Component {
     handleSelected = (indices) => {
@@ -20,7 +17,7 @@ class TransactionList extends React.Component {
 
     componentWillMount() {
         const { fetchTransactions } = this.props;
-        fetchTransactions(this.props.location.query);
+        fetchTransactions(dateOrToday(this.props.location.query));
     }
 
     componentWillUpdate(nextProps) {
@@ -28,7 +25,7 @@ class TransactionList extends React.Component {
         const query = this.props.location.query;
         const nextQuery = nextProps.location.query;
         if (query.year != nextQuery.year || query.month != nextQuery.month) {
-            fetchTransactions(nextQuery);
+            fetchTransactions(dateOrToday(nextQuery));
         }
     }
 
@@ -47,41 +44,7 @@ class TransactionList extends React.Component {
         const transactions = all;
 
         return (
-            <div >
-                <Toolbar {...location}/>
-                <Table
-                    selectable={true}
-                    stripedRows={true}
-                    multiSelectable={true}
-                    onRowSelection={this.handleSelected}>
-                    <TableHeader
-                        adjustForCheckbox={true}
-                        displaySelectAll={true}
-                        enableSelectAll={true}>
-                        <TableRow>
-                            <TableHeaderColumn>Date</TableHeaderColumn>
-                            <TableHeaderColumn>Description</TableHeaderColumn>
-                            <TableHeaderColumn>Category</TableHeaderColumn>
-                            <TableHeaderColumn>Type</TableHeaderColumn>
-                            <TableHeaderColumn>Amount</TableHeaderColumn>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody
-                     displayRowCheckbox={true}
-                     deselectOnClickaway={true}
-                     showRowHover={true}>
-                        {all.map((transaction, index) => (
-                            <TableRow key={index} selected={transaction.selected}>
-                                <TableRowColumn>{ transaction.date }</TableRowColumn>
-                                <TableRowColumn>{ transaction.description }</TableRowColumn>
-                                <TableRowColumn><CategoryDropdown value={transaction.category} onChange={(category) => this.handleUpdateCategory(category, transaction)}/></TableRowColumn>
-                                <TableRowColumn>{ transaction.creditCardType }</TableRowColumn>
-                                <TableRowColumn>{ transaction.amount }</TableRowColumn>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </div>
+            <TransactionTable transactions={all} {...this.props}/>
         );
     }
 }
@@ -89,8 +52,6 @@ class TransactionList extends React.Component {
 export default connect((state) => {
     return {
         all: state.transactions.all,
-        selected: state.transactions.selected,
-        currentMonth: state.transactions.currentMonth,
-        currentYear: state.transactions.currentYear
+        selected: state.transactions.selected
     }
 }, actions)(TransactionList);

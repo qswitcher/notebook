@@ -12,6 +12,7 @@ import CreditCardImport from './CreditCardImport';
 import {connect} from 'react-redux';
 import * as actions from '../../../actions/index';
 import { browserHistory } from 'react-router'
+import { dateOrToday } from '../../../../shared/utils/date_utils';
 
 class CustomToolbar extends React.Component {
 
@@ -25,10 +26,11 @@ class CustomToolbar extends React.Component {
 
   handleCurrentMonthChange = (event, index, value) => {
     //   const { updateCurrentMonth } = this.props;
+    const today = dateOrToday();
       browserHistory.push({
           pathname: this.props.pathname,
           query: {
-              year: this.props.query.year,
+              year: this.props.query.year || today.year,
               month: value + 1
           }
       });
@@ -38,11 +40,12 @@ class CustomToolbar extends React.Component {
   handleCurrentYearChange = (event, index, value) => {
     //   const { updateCurrentYear } = this.props;
     //   updateCurrentYear(value);
+    const today = dateOrToday();
     browserHistory.push({
         pathname: this.props.pathname,
         query: {
             year: value,
-            month: this.props.query.month
+            month: this.props.query.month || today.month
         }
     });
   };
@@ -63,8 +66,30 @@ class CustomToolbar extends React.Component {
     });
   };
 
+  incrementYear = (inc) => {
+      const date = dateOrToday(this.props.query);
+      browserHistory.push({
+          pathname: this.props.pathname,
+          query: {
+              year: parseInt(date.year, 10) + inc,
+              month: date.month
+          }
+      });
+  };
+
+  incrementMonth = (inc) => {
+      const date = dateOrToday(this.props.query);
+      browserHistory.push({
+          pathname: this.props.pathname,
+          query: {
+              year: date.year,
+              month: parseInt(date.month, 10) + inc
+          }
+      });
+  };
+
   render() {
-      const { year, month } = this.props.query;
+      const { year, month } = dateOrToday(this.props.query);
       const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       const years = [2017, 2016];
     return (
@@ -84,24 +109,24 @@ class CustomToolbar extends React.Component {
                   <MenuItem primaryText="Create" value="showCreate"/>
                   <MenuItem primaryText="Import" value="showImport"/>
                 </IconMenu>
-                <FontIcon className="material-icons">chevron_left</FontIcon>
-                <DropDownMenu labelStyle={{lineHeight: '48px'}} value={parseInt(month, 10) - 1} onChange={this.handleCurrentMonthChange}>
+                <FontIcon className="material-icons" onTouchTap={() => this.incrementMonth(-1)}>chevron_left</FontIcon>
+                <DropDownMenu style={{margin: 0}}  labelStyle={{lineHeight: '48px', padding: '0px 24px'}} iconButton={null} value={parseInt(month, 10) - 1} onChange={this.handleCurrentMonthChange}>
                     {months.map((month, i) => {
                         return (
                             <MenuItem key={i} value={i} primaryText={month} />
                         )
                     })}
                  </DropDownMenu>
-                 <FontIcon className="material-icons">chevron_right</FontIcon>
-                 <FontIcon className="material-icons">chevron_left</FontIcon>
-                 <DropDownMenu value={parseInt(year, 10)} onChange={this.handleCurrentYearChange}>
+                 <FontIcon style={{paddingLeft: 0, paddingRight: '20px'}} className="material-icons" onTouchTap={() => this.incrementMonth(1)}>chevron_right</FontIcon>
+                 <FontIcon className="material-icons" onTouchTap={() => this.incrementYear(-1)}>chevron_left</FontIcon>
+                 <DropDownMenu style={{margin: 0}} labelStyle={{lineHeight: '48px', padding: '0px 24px'}} iconButton={null} value={parseInt(year, 10)} onChange={this.handleCurrentYearChange}>
                      {years.map((year) => {
                          return (
                              <MenuItem key={year} value={year} primaryText={year} />
                          )
                      })}
                   </DropDownMenu>
-                  <FontIcon className="material-icons">chevron_right</FontIcon>
+                  <FontIcon style={{paddingLeft: 0}} className="material-icons" onTouchTap={() => this.incrementYear(1)}>chevron_right</FontIcon>
             </ToolbarGroup>
             <ToolbarGroup>
                  <ToolbarSeparator />

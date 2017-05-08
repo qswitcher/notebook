@@ -6,9 +6,14 @@ const formidable = require('formidable');
 const ObjectId  =  require('mongodb').ObjectId;
 const transactionImporter = require('./helpers/importer');
 const CardTypes = require('../constants/credit_cards');
+const Categories = require('../constants/categories');
 
 function datetimeToDateString(date) {
     return new Date(date).toISOString().substring(0,10);
+}
+
+function getKey(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
 }
 
 module.exports.statistics = (req, res, next) => {
@@ -26,10 +31,14 @@ module.exports.statistics = (req, res, next) => {
         for (let i = 0; i <12; i++) {
             statistics[i] = {
                 sum: 0,
-                date: `${year}-${(i + 1) < 10 ? '0' : ''}${i + 1}`
+                date: `${year}-${(i + 1) < 10 ? '0' : ''}${i + 1}`,
+                spending: {}
             };
             Object.keys(CardTypes).forEach(cardType => {
                 statistics[i][cardType.toLowerCase()] = 0;
+            });
+            Object.keys(Categories).forEach(category => {
+                statistics[i].spending[category.toLowerCase()] = 0;
             });
         }
 
@@ -42,12 +51,19 @@ module.exports.statistics = (req, res, next) => {
                 statistics[month - 1].sum += parseFloat(item.amount);
                 statistics[month - 1][item.creditCardType.toLowerCase()] += parseFloat(item.amount);
             }
+
+            if (item.category && getKey(Categories, item.category)) {
+                statistics[month - 1].spending[getKey(Categories, item.category).toLowerCase()] += parseFloat(item.amount);
+            }
         });
 
         statistics.forEach((item) => {
             item.sum = item.sum.toFixed(2);
             Object.keys(CardTypes).forEach(cardType => {
                 item[cardType.toLowerCase()] = item[cardType.toLowerCase()].toFixed(2);
+            });
+            Object.keys(Categories).forEach(category => {
+                item.spending[category.toLowerCase()] = item.spending[category.toLowerCase()].toFixed(2);
             });
         });
 

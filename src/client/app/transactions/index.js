@@ -5,12 +5,13 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 
 class FinanceApp extends React.Component {
     render() {
+        const {search} = this.props.location;
         return (
             <Card>
                 <CardHeader>
                     <div>
-                        <FlatButtonLink to="/transactions/list">Transactions</FlatButtonLink>
-                        <FlatButtonLink to="/transactions/summary">Summary</FlatButtonLink>
+                        <FlatButtonLink to={`/transactions/list${search}`}>Transactions</FlatButtonLink>
+                        <FlatButtonLink to={`/transactions/summary${search}`}>Summary</FlatButtonLink>
                     </div>
                 </CardHeader>
                 <CardText>

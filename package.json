@@ -8,7 +8,7 @@
     "start": "npm build && node src/index.js",
     "dev-start": "nodemon src/index.js --watch src/server --exec babel-node --presets es2015,stage-2",
     "build": "npm run clean && webpack --config ./webpack.config.js --progress --colors",
-    "test-server": "mocha ./test/server --recursive -R min",
+    "test-server": "NODE_ENV=test nodemon --exec 'mocha ./test/server --recursive -R min'",
     "test-client": "NODE_ENV=test nodemon --exec 'mocha ./src/client/**/*.test.js --compilers js:babel-core/register --require ./test/client_setup.js --recursive -R min'",
     "test": "NODE_ENV=test nodemon --exec 'npm run test-client'"
   },
@@ -16,6 +16,7 @@
   "license": "ISC",
   "devDependencies": {
     "assets-webpack-plugin": "^3.5.1",
+    "axios-mock-adapter": "^1.8.1",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.21.0",
     "babel-eslint": "^7.1.1",
@@ -40,6 +41,7 @@
     "react-dom": "^15.5.4",
     "react-hot-loader": "^1.3.1",
     "react-test-renderer": "^15.5.4",
+    "redux-mock-store": "^1.2.3",
     "rimraf": "^2.5.4",
     "style-loader": "^0.13.1",
     "supertest": "^3.0.0",

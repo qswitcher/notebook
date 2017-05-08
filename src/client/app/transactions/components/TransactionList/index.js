@@ -44,7 +44,11 @@ class TransactionList extends React.Component {
         const transactions = all;
 
         return (
-            <TransactionTable transactions={all} {...this.props}/>
+            <TransactionTable
+            transactions={all}
+            handleUpdateCategory={this.handleUpdateCategory.bind(this)}
+            onDelete={this.onDelete.bind(this)}
+            {...this.props}/>
         );
     }
 }

@@ -17,14 +17,18 @@ export function fetchTransactions(params) {
             query = `?year=${year}&month=${month}`;
         }
     }
+
     const request = axios.get(`${ROOT_URL}${query}`);
 
     return (dispatch) => {
-            request.then(({data}) => {
+            return request.then(({data}) => {
                 dispatch({
                     type: actions.FETCH_TRANSACTIONS,
                     payload: data
                 });
+            })
+            .catch(err => {
+                console.log(err);
             });
     };
 };
@@ -32,13 +36,13 @@ export function fetchTransactions(params) {
 export function fetchStatistics(params) {
     let query = '';
     if (params) {
-        const {currentYear} = params;
-        query = `?year=${currentYear}`;
+        const {year} = params;
+        query = `?year=${year}`;
     }
     const request = axios.get(`${ROOT_URL}/statistics${query}`);
 
     return (dispatch) => {
-            request.then(({data}) => {
+            return request.then(({data}) => {
                 dispatch({
                     type: actions.FETCH_STATISTICS,
                     payload: data
@@ -51,7 +55,7 @@ export function createTransaction(transaction) {
     const request = axios.post(`${ROOT_URL}`, transaction);
 
     return (dispatch) => {
-            request.then(({data}) => {
+            return request.then(({data}) => {
                 dispatch({
                     type: actions.CREATE_TRANSACTION,
                     payload: data
@@ -60,14 +64,22 @@ export function createTransaction(transaction) {
     };
 };
 
+/**
+* Updates a transaction and calls FETCH_TRANSACTIONS to get all the updated
+* transactions that occur in the same month as "transaction"
+*/
 export function updateTransaction(transaction) {
     const request = axios.put(`${ROOT_URL}/${transaction._id}`, transaction);
 
-    return (dispatch) => {
-            request.then(() => fetchTransactions({
-                currentMonth: 3,
-                currentYear: 2017
-            })(dispatch));
+    const date = new Date(transaction.date);
+    return dispatch => {
+            return request.then(() => fetchTransactions({
+                month: parseInt(date.getMonth(), 10) + 1,
+                year: date.getFullYear()
+            })(dispatch))
+            .catch(err => {
+                console.log(err);
+            });
     };
 };
 
@@ -97,7 +109,7 @@ export function importTransactions(data) {
         body
     );
 
-    return (dispatch) => {
+    return dispatch => {
         request.then(() => {
             dispatch(fetchTransactions());
         });

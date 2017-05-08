@@ -22,25 +22,29 @@ describe('CCTransactions controller', () => {
             date: Date.parse('2016-03-02'),
             amount: 1,
             description: 'March charge',
-            creditCardType: 'Amex'
+            creditCardType: 'Amex',
+            category: 'Dining'
         });
         const april2016 = new CCTransaction({
             date: Date.parse('2016-04-02'),
             amount: 1,
             description: 'April charge',
-            creditCardType: 'Amex'
+            creditCardType: 'Amex',
+            category: 'Dining'
         });
         const may2016_1 = new CCTransaction({
             date: Date.parse('2016-05-02'),
             amount: 2.1,
             description: 'May charge',
-            creditCardType: 'Amex'
+            creditCardType: 'Amex',
+            category: 'Groceries'
         });
         const may2016_2 = new CCTransaction({
             date: Date.parse('2016-05-03'),
             amount: 3.4,
             description: 'May charge #2',
-            creditCardType: 'Citi'
+            creditCardType: 'Citi',
+            category: 'Groceries'
         });
         Promise.all([todayTransaction.save(), march2016.save(), april2016.save(), may2016_1.save(), may2016_2.save()])
             .then((values) => {
@@ -70,7 +74,19 @@ describe('CCTransactions controller', () => {
                             amex: '1.00',
                             citi: '0.00',
                             discover: '0.00',
-                            marriott: '0.00'
+                            marriott: '0.00',
+                            spending: {
+                                home_improvement: '0.00',
+                                groceries: '0.00',
+                                gas: '0.00',
+                                entertainment: '0.00',
+                                education: '0.00',
+                                dining: '1.00',
+                                charity: '0.00',
+                                medical: '0.00',
+                                misc: '0.00',
+                                utilities: '0.00'
+                            }
                         })
                         expect(response.body[3]).to.deep.eq({
                             date: '2016-04',
@@ -79,7 +95,19 @@ describe('CCTransactions controller', () => {
                             amex: '1.00',
                             citi: '0.00',
                             discover: '0.00',
-                            marriott: '0.00'
+                            marriott: '0.00',
+                            spending: {
+                                home_improvement: '0.00',
+                                groceries: '0.00',
+                                gas: '0.00',
+                                entertainment: '0.00',
+                                education: '0.00',
+                                dining: '1.00',
+                                charity: '0.00',
+                                medical: '0.00',
+                                misc: '0.00',
+                                utilities: '0.00'
+                            }
                         })
                         expect(response.body[4]).to.deep.eq({
                             date: '2016-05',
@@ -88,7 +116,19 @@ describe('CCTransactions controller', () => {
                             amex: '2.10',
                             citi: '3.40',
                             discover: '0.00',
-                            marriott: '0.00'
+                            marriott: '0.00',
+                            spending: {
+                                home_improvement: '0.00',
+                                groceries: '5.50',
+                                gas: '0.00',
+                                entertainment: '0.00',
+                                education: '0.00',
+                                dining: '0.00',
+                                charity: '0.00',
+                                medical: '0.00',
+                                misc: '0.00',
+                                utilities: '0.00'
+                            }
                         });
                         done();
                     });
@@ -257,7 +297,7 @@ describe('CCTransactions controller', () => {
                      if (error) {
                          return done(error);
                      }
-                     const p1 = CCTransaction.findOne({description: 'WHOLE FOODS MARKET - AUSTIN, TX'});
+                     const p1 = CCTransaction.findOne({description: 'HOLY FOODS MARKET - AUSTIN, TX'});
                      const p2 = CCTransaction.findOne({description: 'AUTOPAY PAYMENT RECEIVED - THANK YOU'});
                      Promise.all([p1, p2])
                         .then(transactions => {
@@ -298,8 +338,11 @@ describe('CCTransactions controller', () => {
              });
 
              it('auto adds category if available', function(done) {
-                 const mapping = new CategoryMapping({
-                     value: 'WHOLE FOODS MARKET - AUSTIN, TX',
+                 const mapping = new CCTransaction({
+                     amount: 123,
+                     date: new Date(),
+                     description: 'HOLY FOODS MARKET - AUSTIN, TX',
+                     creditCardType: 'Citi',
                      category: 'Groceries'
                  });
 
@@ -313,12 +356,12 @@ describe('CCTransactions controller', () => {
                          .field({creditCardType: 'Amex'})
                          .expect(200)
                          .end(function(error, res) {
-                             CCTransaction.findOne({description: 'WHOLE FOODS MARKET - AUSTIN, TX'})
+                             CCTransaction.findOne({description: 'HOLY FOODS MARKET - AUSTIN, TX'})
                                .then(t => {
                                    expect(t.category).to.eq('Groceries');
                                    done();
                                })
-                                .catch(err => done(err));
+                               .catch(err => done(err));
                          });
                     })
                     .catch(err => done(err));

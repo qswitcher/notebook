@@ -1,3 +1,5 @@
+const axios = require('axios');
+
 require("babel-polyfill");
 
 const JSDOM = require('jsdom').JSDOM;
@@ -14,3 +16,5 @@ Object.keys(document.defaultView).forEach((property) => {
 global.navigator = {
   userAgent: 'node.js'
 };
+
+axios.defaults.baseURL='http://localhost:4000/';

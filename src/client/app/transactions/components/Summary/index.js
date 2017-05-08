@@ -2,12 +2,14 @@ import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from 'recha
 import React from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/index';
+import { dateOrToday } from '../../../shared/utils/date_utils';
 
 class Summary extends React.Component {
     componentWillMount() {
-        const { currentYear, fetchStatistics } = this.props;
+        const date = dateOrToday(this.props.location.query);
+        const { fetchStatistics } = this.props;
         fetchStatistics({
-            currentYear
+            year: date.year
         });
     }
 

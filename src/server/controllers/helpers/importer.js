@@ -59,21 +59,47 @@ const mappers = {
 };
 
 const dbInserter = (creditCardType, data, callback) => {
+    const descriptionCache = {};
     // send to DB
     const transactionSaveTasks = data.map((row) => (cb) => {
         const transaction = new CCTransaction(mappers[creditCardType].inserter(row));
-        transaction.save((err) => {
-            if (err && err.code == 11000) {
-                // transaction was already inserted, skip
-                return cb(null, transaction);
-            }
 
-            if (err) {
-                console.error(err);
-                return cb(err)
-            }
-            return cb(null, transaction);
-        });
+        const insert = () => {
+            // try and see if description exists
+            transaction.save((err) => {
+                if (err && err.code == 11000) {
+                    // transaction was already inserted, skip
+                    return cb(null, transaction);
+                }
+
+                if (err) {
+                    console.error(err);
+                    return cb(err)
+                }
+                return cb(null, transaction);
+            });
+        };
+
+        if (!descriptionCache[transaction.description]) {
+            CCTransaction.findOne({description: transaction.description})
+                .then(other => {
+                    if (other) {
+                        transaction.category = other.category;
+                        descriptionCache[transaction.description] = {
+                            category: other.category
+                        };
+                    }
+                    insert();
+                })
+                .catch(err => {
+                    // log error
+                    console.error(err);
+                    insert();
+                });
+        } else {
+            transaction.category = descriptionCache[transaction.description].category;
+            insert();
+        }
     });
 
     async.parallel(transactionSaveTasks, callback);

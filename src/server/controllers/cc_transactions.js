@@ -7,6 +7,7 @@ const ObjectId  =  require('mongodb').ObjectId;
 const transactionImporter = require('./helpers/importer');
 const CardTypes = require('../constants/credit_cards');
 const Categories = require('../constants/categories');
+const parseDate = require('../../client/app/shared/utils/date_utils').parseDate;
 
 function datetimeToDateString(date) {
     return new Date(date).toISOString().substring(0,10);
@@ -47,13 +48,18 @@ module.exports.statistics = (req, res, next) => {
             const month = +(date.split('-')[1]);
             // want to skip auto payments for computing statistics since we pay off the balance
             // each month
-            if (!item.description || item.description.toLowerCase().indexOf('autopay') === -1) {
+            const notPayment = item.description.toLowerCase().indexOf('autopay') === -1 &&
+                item.description.toLowerCase().indexOf('payment') === -1 &&
+                item.description.toLowerCase().indexOf('cash reward') === -1;
+            if (!item.description || notPayment) {
                 statistics[month - 1].sum += parseFloat(item.amount);
                 statistics[month - 1][item.creditCardType.toLowerCase()] += parseFloat(item.amount);
             }
 
             if (item.category && getKey(Categories, item.category)) {
                 statistics[month - 1].spending[getKey(Categories, item.category).toLowerCase()] += parseFloat(item.amount);
+            } else if (!item.category && notPayment) {
+                statistics[month - 1].spending[getKey(Categories, Categories.UNASSIGNED).toLowerCase()] += parseFloat(item.amount);
             }
         });
 
@@ -83,7 +89,7 @@ module.exports.list = (req, res, next) => {
         res.json(docs.map((item) => {
             const date = item.date;
             return Object.assign({}, item, {
-                date: new Date(date).toISOString().substring(0,10)
+                date: date.toISOString().substring(0,10)
             });
         }));
     });

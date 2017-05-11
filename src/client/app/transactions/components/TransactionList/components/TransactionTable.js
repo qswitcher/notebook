@@ -36,15 +36,15 @@ class TransactionTable extends React.Component {
                      displayRowCheckbox={true}
                      deselectOnClickaway={true}
                      showRowHover={true}>
-                        {transactions.map((transaction, index) => (
-                            <TableRow key={index} selected={transaction.selected}>
+                        {transactions.map((transaction, index) => {
+                            return (<TableRow key={index} selected={transaction.selected}>
                                 <TableRowColumn>{ transaction.date }</TableRowColumn>
                                 <TableRowColumn>{ transaction.description }</TableRowColumn>
                                 <TableRowColumn><CategoryDropdown value={transaction.category} onChange={(category) => handleUpdateCategory(category, transaction)}/></TableRowColumn>
                                 <TableRowColumn>{ transaction.creditCardType }</TableRowColumn>
                                 <TableRowColumn>{ transaction.amount }</TableRowColumn>
-                            </TableRow>
-                        ))}
+                            </TableRow>);
+                        })}
                     </TableBody>
                 </Table>
             </div>

@@ -11,15 +11,32 @@ const mock = new MockAdapter(axios);
 const middlewares = [ thunk ]
 const mockStore = configureMockStore(middlewares)
 
+const transaction = {
+    _id: 1,
+    category: 'My Category',
+    date: '2017-04-19'
+};
+
+describe('#deleteSelected', () => {
+    it('deletes selected transactions', () => {
+        mock.onPost('/api/transactions/delete', [1])
+            .reply(200, { body: { success: true }});
+
+        const expectedActions = [
+          { type: types.DELETE_TRANSACTIONS, payload: [transaction] }
+        ]
+        const store = mockStore({ todos: [] })
+
+        return store.dispatch(actions.deleteSelected([transaction]))
+          .then(() => { // return of async actions
+            expect(store.getActions()).to.eql(expectedActions)
+        });
+    });
+});
+
 describe('#updateTransaction', () => {
 
     it('updates the transaction and fetches updated transactions', () => {
-        const transaction = {
-            _id: 1,
-            category: 'My Category',
-            date: '2017-04-19'
-        };
-
         mock.onPut('/api/transactions/1', transaction)
             .reply(200, { body: { success: true }})
             .onGet('/api/transactions?year=2017&month=4')

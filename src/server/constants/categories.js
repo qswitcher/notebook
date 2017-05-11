@@ -7,6 +7,9 @@ module.exports = {
     DINING: 'Dining',
     CHARITY: 'Charity',
     MEDICAL: 'Medical/Dental',
+    CLOTHING: 'Clothing',
     MISC: 'Misc',
-    UTILITIES: 'Utilities'
+    CAR: 'Car',
+    UTILITIES: 'Utilities',
+    UNASSIGNED: '--'
 };

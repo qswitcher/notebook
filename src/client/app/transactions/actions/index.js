@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as actions from './types';
+import {parseDate} from '../../shared/utils/date_utils';
 
 const ROOT_URL = '/api/transactions';
 
@@ -26,9 +27,11 @@ export function fetchTransactions(params) {
                     type: actions.FETCH_TRANSACTIONS,
                     payload: data
                 });
-            })
-            .catch(err => {
-                console.log(err);
+            }).catch((err) => {
+                dispatch({
+                    type: actions.GENERAL_ERROR,
+                    payload: err
+                });
             });
     };
 };
@@ -42,12 +45,12 @@ export function fetchStatistics(params) {
     const request = axios.get(`${ROOT_URL}/statistics${query}`);
 
     return (dispatch) => {
-            return request.then(({data}) => {
-                dispatch({
-                    type: actions.FETCH_STATISTICS,
-                    payload: data
-                });
+        return request.then(({data}) => {
+            dispatch({
+                type: actions.FETCH_STATISTICS,
+                payload: data
             });
+        });
     };
 };
 
@@ -55,12 +58,17 @@ export function createTransaction(transaction) {
     const request = axios.post(`${ROOT_URL}`, transaction);
 
     return (dispatch) => {
-            return request.then(({data}) => {
-                dispatch({
-                    type: actions.CREATE_TRANSACTION,
-                    payload: data
-                });
+        return request.then(({data}) => {
+            dispatch({
+                type: actions.CREATE_TRANSACTION,
+                payload: data
             });
+        }).catch((err) => {
+            dispatch({
+                type: actions.GENERAL_ERROR,
+                payload: err
+            });
+        });
     };
 };
 
@@ -71,14 +79,17 @@ export function createTransaction(transaction) {
 export function updateTransaction(transaction) {
     const request = axios.put(`${ROOT_URL}/${transaction._id}`, transaction);
 
-    const date = new Date(transaction.date);
+    const date = parseDate(transaction.date);
     return dispatch => {
             return request.then(() => fetchTransactions({
                 month: parseInt(date.getMonth(), 10) + 1,
                 year: date.getFullYear()
             })(dispatch))
-            .catch(err => {
-                console.log(err);
+            .catch((err) => {
+                dispatch({
+                    type: actions.GENERAL_ERROR,
+                    payload: err
+                });
             });
     };
 };
@@ -88,7 +99,7 @@ export function deleteTransaction(transaction) {
     const request = axios.delete(`${ROOT_URL}/${id}`);
 
     return (dispatch) => {
-            request.then(() => {
+            return request.then(() => {
                 dispatch({
                     type: actions.DELETE_TRANSACTION,
                     payload: id
@@ -112,6 +123,12 @@ export function importTransactions(data) {
     return dispatch => {
         request.then(() => {
             dispatch(fetchTransactions());
+        })
+        .catch((err) => {
+            dispatch({
+                type: actions.GENERAL_ERROR,
+                payload: err
+            });
         });
     }
 };
@@ -133,27 +150,16 @@ export function deleteSelected(selected) {
     const request = axios.post(`${ROOT_URL}/delete`, selected.map((item) => item['_id']));
 
     return (dispatch) => {
-            request.then(() => {
+            return request.then(() => {
                 dispatch({
                     type: actions.DELETE_TRANSACTIONS,
                     payload: selected
                 });
             }).catch((err) => {
-                console.error(err);
+                dispatch({
+                    type: actions.GENERAL_ERROR,
+                    payload: err
+                });
             });
-    };
-};
-
-export function updateCurrentMonth(value) {
-    return {
-        type: actions.SET_CURRENT_MONTH,
-        payload: value
-    };
-};
-
-export function updateCurrentYear(value) {
-    return {
-        type: actions.SET_CURRENT_YEAR,
-        payload: value
     };
 };

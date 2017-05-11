@@ -48,6 +48,7 @@ class TransactionList extends React.Component {
             transactions={all}
             handleUpdateCategory={this.handleUpdateCategory.bind(this)}
             onDelete={this.onDelete.bind(this)}
+            handleSelected={this.handleSelected}
             {...this.props}/>
         );
     }

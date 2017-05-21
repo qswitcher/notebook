@@ -1,8 +1,9 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import * as actions from '../../actions/index';
-import { dateOrToday } from '../../../shared/utils/date_utils';
-import TransactionTable from './components/TransactionTable';
+import React from 'react'
+import { connect } from 'react-redux'
+import * as actions from '../../actions/index'
+import { dateOrToday } from '../../../shared/utils/date_utils'
+import TransactionTable from './components/TransactionTable'
+import MonthSummary from './components/MonthSummary'
 
 class TransactionList extends React.Component {
     handleSelected = (indices) => {
@@ -41,15 +42,19 @@ class TransactionList extends React.Component {
 
     render() {
         const { selected, all, location } = this.props;
+        const { month } = location.query;
         const transactions = all;
 
         return (
-            <TransactionTable
-            transactions={all}
-            handleUpdateCategory={this.handleUpdateCategory.bind(this)}
-            onDelete={this.onDelete.bind(this)}
-            handleSelected={this.handleSelected}
-            {...this.props}/>
+            <div>
+                <MonthSummary transactions={transactions} />
+                <TransactionTable
+                transactions={transactions}
+                handleUpdateCategory={this.handleUpdateCategory.bind(this)}
+                onDelete={this.onDelete.bind(this)}
+                handleSelected={this.handleSelected}
+                {...this.props}/>
+            </div>
         );
     }
 }

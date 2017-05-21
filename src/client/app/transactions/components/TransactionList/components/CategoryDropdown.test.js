@@ -2,10 +2,12 @@ import React from 'react';
 import { expect } from 'chai';
 import { mount, shallow } from 'enzyme';
 import CategoryDropdown from './CategoryDropdown';
+import Categories from '../../../../../../server/constants/categories';
+
 
 describe('<CategoryDropdown />', () => {
     it('renders all the category options', () => {
-        expect(shallow(<CategoryDropdown />).find('.category-dropdown-choice').length).to.eq(10);
+        expect(shallow(<CategoryDropdown />).find('.category-dropdown-choice').length).to.eq(Object.keys(Categories).length);
     });
 });
 // class Foo extends React.Component {

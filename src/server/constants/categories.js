@@ -11,5 +11,5 @@ module.exports = {
     CAR: 'Car',
     UTILITIES: 'Utilities',
     MISC: 'Misc',
-    UNASSIGNED: '--'
+    UNASSIGNED: 'Unassigned'
 };
